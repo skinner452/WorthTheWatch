@@ -14,30 +14,25 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Alec on 3/27/2015.
  */
 public class LogoDownloader extends AsyncTask<String, Void, Bitmap> {
-    private ImageView imageView;
-    private Team team;
-
-    public LogoDownloader (ImageView imageView, Team team){
-        this.imageView = imageView;
-        this.team = team;
-    }
     @Override
     protected Bitmap doInBackground(String... params) {
         System.out.println("Getting logo: " + params[0]);
-        params[0] = params[0].replace(" ","%20");
+        String url = "http://askinner.net/wtw/logos/" + params[0] + ".png";
+        url = url.replace(" ","%20");
         final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-        final HttpGet getRequest = new HttpGet(params[0]);
+        final HttpGet getRequest = new HttpGet(url);
         try {
             HttpResponse response = client.execute(getRequest);
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
                 Log.w("LogoDownloader", "Error " + statusCode
-                        + " while retrieving bitmap from " + params[0]);
+                        + " while retrieving bitmap from " + url);
                 return null;
             }
 
@@ -59,19 +54,12 @@ public class LogoDownloader extends AsyncTask<String, Void, Bitmap> {
             // Could provide a more explicit error message for IOException or
             // IllegalStateException
             getRequest.abort();
-            Log.w("LogoDownloader", "Error while retrieving bitmap from " + params[0]);
+            Log.w("LogoDownloader", "Error while retrieving bitmap from " + url);
         } finally {
             if (client != null) {
                 client.close();
             }
         }
         return null;
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
-        team.setLogo(bitmap);
-        super.onPostExecute(bitmap);
     }
 }

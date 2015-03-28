@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Date"
         android:id="@+id/date"
         android:gravity="center_vertical|center_horizontal"
@@ -17,7 +17,7 @@
         android:layout_toLeftOf="@+id/awayLogo"
         android:layout_toRightOf="@+id/homeLogo"
         android:layout_toEndOf="@+id/homeLogo"
-        android:textSize="15dp"
+        android:textSize="12dp"
         android:paddingTop="8dp" />
 
     <TextView
@@ -148,8 +148,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit your own review"
-        android:id="@+id/button"
+        android:text="Submit Review"
+        android:id="@+id/submitReviewButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 

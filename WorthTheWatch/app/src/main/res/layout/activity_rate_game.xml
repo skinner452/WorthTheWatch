@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Your rating"
-        android:id="@+id/textView2"
+        android:id="@+id/YourRatingTitle"
         android:layout_gravity="center_horizontal"
         android:paddingTop="10dp"
         android:layout_alignParentTop="true"
@@ -20,12 +20,12 @@
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
+        android:id="@+id/ratingBar"
         android:layout_gravity="center_horizontal"
         android:indeterminate="false"
         android:max="9"
         android:progress="5"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/YourRatingTitle"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -33,10 +33,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="5"
-        android:id="@+id/textView3"
+        android:id="@+id/ratingNum"
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
-        android:layout_below="@+id/seekBar"
+        android:layout_below="@+id/ratingBar"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -44,23 +44,24 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Characteristics"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/textView3"
+        android:id="@+id/characteristicTitle"
+        android:layout_below="@+id/ratingNum"
         android:layout_centerHorizontal="true" />
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView2"
-        android:layout_below="@+id/textView4"
+        android:id="@+id/charList"
+        android:layout_below="@+id/characteristicTitle"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/button2" />
+        android:layout_above="@+id/submitButton"
+        android:choiceMode="multipleChoice" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
-        android:id="@+id/button2"
+        android:id="@+id/submitButton"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />

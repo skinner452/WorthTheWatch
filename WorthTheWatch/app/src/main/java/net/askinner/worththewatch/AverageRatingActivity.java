@@ -1,10 +1,13 @@
 package net.askinner.worththewatch;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +18,8 @@ public class AverageRatingActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_average_rating);
+
+        final int gameID = getIntent().getIntExtra("gameID",0);
 
         TextView date = (TextView) findViewById(R.id.date);
         date.setText(getIntent().getStringExtra("date"));
@@ -37,6 +42,16 @@ public class AverageRatingActivity extends ActionBarActivity {
 
         ImageView awayLogo = (ImageView) findViewById(R.id.awayLogo);
         new Team(awayTeam).putLogo(awayLogo);
+
+        Button submitReview = (Button) findViewById(R.id.submitReviewButton);
+        submitReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(),RateGameActivity.class);
+                intent.putExtra("gameID",gameID);
+                startActivity(intent);
+            }
+        });
     }
 
 

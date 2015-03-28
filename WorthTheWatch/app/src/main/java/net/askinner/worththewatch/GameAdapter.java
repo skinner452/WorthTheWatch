@@ -97,6 +97,8 @@ public class GameAdapter extends BaseAdapter {
 
         viewHolder.stadiumText.setText(game.getStadium());
 
+        System.out.println(game.getId() + " called");
+
         // Home team logo
         Team homeTeam = game.getHomeTeam();
         homeTeam.putLogo(viewHolder.homeLogo);

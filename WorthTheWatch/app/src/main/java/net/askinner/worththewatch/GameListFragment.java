@@ -50,7 +50,6 @@ public class GameListFragment extends Fragment {
 
             maxWeeks = gameList.getMaxWeeks();
 
-            final ListView list = (ListView)view.findViewById(R.id.gameList);
             final ListView listview = (ListView) view.findViewById(R.id.gameList);
 
             final TextView weekText = (TextView)view.findViewById(R.id.week);
@@ -112,6 +111,7 @@ public class GameListFragment extends Fragment {
                         intent = new Intent(getActivity(), PredictedRatingActivity.class);
                     }
 
+                    intent.putExtra("gameID",game.getId());
                     intent.putExtra("homeTeam",game.getHomeTeamName());
                     intent.putExtra("awayTeam",game.getAwayTeamName());
                     intent.putExtra("date",game.getFormattedDate());

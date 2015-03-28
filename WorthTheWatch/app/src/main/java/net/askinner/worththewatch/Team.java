@@ -23,27 +23,32 @@ public class Team implements Serializable{
     private String name;
     private Bitmap logo;
     private boolean noLogo;
+    private boolean gettingLogo;
+    private LogoDownloader ld;
 
     public Team(String name) {
         this.name = name;
         logo = null;
+        ld = null;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setLogo(Bitmap logo) {
-        this.logo = logo;
-        if(logo == null){
-            noLogo = true;
-        }
-    }
-
     public void putLogo(ImageView imageView){
         if(!noLogo){
             if(logo == null){
-                new LogoDownloader(imageView, this).execute("http://askinner.net/wtw/logos/" + name + ".png");
+                try{
+                    logo = new LogoDownloader().execute(name).get();
+                    if(logo == null){
+                        noLogo = true;
+                    } else {
+                        imageView.setImageBitmap(logo);
+                    }
+                } catch (Exception e){
+                    noLogo = true;
+                }
             } else {
                 imageView.setImageBitmap(logo);
             }

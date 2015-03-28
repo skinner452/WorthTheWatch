@@ -1,0 +1,183 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="net.askinner.worththewatch.PredictedRatingActivity"
+    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:clickable="false"
+    android:focusableInTouchMode="false"
+    android:longClickable="false"
+    android:touchscreenBlocksFocus="false">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="5.00"
+        android:id="@+id/predictedRating"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:paddingBottom="10dp"
+        android:layout_below="@+id/averageRatingTitle"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Predicted Rating"
+        android:id="@+id/averageRatingTitle"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/channels"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="10dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/homeLogo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:maxHeight="70dp"
+        android:maxWidth="70dp"
+        android:minHeight="70dp"
+        android:minWidth="70dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/awayLogo"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:maxHeight="70dp"
+        android:maxWidth="70dp"
+        android:minHeight="70dp"
+        android:minWidth="70dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Date"
+        android:id="@+id/date"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_alignTop="@+id/awayLogo"
+        android:layout_toLeftOf="@+id/awayLogo"
+        android:layout_toRightOf="@+id/homeLogo"
+        android:layout_toEndOf="@+id/homeLogo"
+        android:textSize="12dp"
+        android:paddingTop="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Time"
+        android:id="@+id/time"
+        android:layout_below="@+id/date"
+        android:layout_toLeftOf="@+id/awayLogo"
+        android:layout_alignLeft="@+id/date"
+        android:layout_alignStart="@+id/date"
+        android:gravity="center_horizontal"
+        android:textSize="12dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Stadium"
+        android:id="@+id/stadium"
+        android:gravity="top|center_horizontal"
+        android:textSize="10dp"
+        android:layout_below="@+id/time"
+        android:layout_toLeftOf="@+id/awayLogo"
+        android:layout_toRightOf="@+id/homeLogo"
+        android:layout_toEndOf="@+id/homeLogo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Team A"
+        android:id="@+id/homeName"
+        android:layout_below="@+id/predictedRating"
+        android:layout_alignLeft="@+id/homeLogo"
+        android:layout_alignStart="@+id/homeLogo"
+        android:textSize="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Team B"
+        android:id="@+id/awayName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="15dp"
+        android:layout_below="@+id/predictedRating" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Average Ratings"
+        android:id="@+id/averageRatingsTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/homeName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="5.00"
+        android:id="@+id/homeAverage"
+        android:layout_alignRight="@+id/homeName"
+        android:layout_alignEnd="@+id/homeName"
+        android:layout_alignLeft="@+id/homeName"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/homeName"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="5.00"
+        android:id="@+id/awayAverage"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/awayName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignLeft="@+id/awayName"
+        android:layout_alignStart="@+id/awayName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/channels"
+        android:gravity="center_horizontal"
+        android:text="Channels"
+        android:layout_below="@+id/awayLogo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="10dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@+id/channels"
+        android:id="@+id/divider" />
+
+</RelativeLayout>

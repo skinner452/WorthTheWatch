@@ -71,7 +71,8 @@
         android:maxHeight="70dp"
         android:maxWidth="70dp"
         android:minHeight="70dp"
-        android:minWidth="70dp" />
+        android:minWidth="70dp"
+        android:adjustViewBounds="true" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -84,7 +85,8 @@
         android:minWidth="70dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:adjustViewBounds="true" />
 
     <View
         android:layout_width="fill_parent"

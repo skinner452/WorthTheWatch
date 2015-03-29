@@ -1,5 +1,7 @@
 package net.askinner.worththewatch;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
@@ -22,8 +24,6 @@ public class Team {
 
     private String name;
     private Bitmap logo;
-    private boolean noLogo;
-    private boolean gettingLogo;
     private LogoDownloader ld;
     private double averageRating;
 
@@ -31,8 +31,6 @@ public class Team {
         this.name = name;
         logo = null;
         ld = null;
-
-        // get average rating
     }
 
     public String getName() {
@@ -40,21 +38,34 @@ public class Team {
     }
 
     public void putLogo(ImageView imageView){
-        if(!noLogo){
+        Context context = imageView.getContext();
+        if(logo == null){
+            String fileName = name.replace(" ","").replace(".","").toLowerCase();
+            int rID = context.getResources().getIdentifier(fileName,"drawable",context.getPackageName());
+            logo = BitmapFactory.decodeResource(context.getResources(),rID);
+
             if(logo == null){
-                try{
-                    logo = new LogoDownloader().execute(name).get();
-                    if(logo == null){
-                        noLogo = true;
-                    } else {
-                        imageView.setImageBitmap(logo);
-                    }
-                } catch (Exception e){
-                    noLogo = true;
-                }
-            } else {
-                imageView.setImageBitmap(logo);
+                logo = BitmapFactory.decodeResource(context.getResources(),android.R.drawable.ic_menu_gallery);
             }
         }
+
+        imageView.setImageBitmap(logo);
+
+//        if(!noLogo){
+//            if(logo == null){
+//                try{
+//                    logo = new LogoDownloader().execute(name).get();
+//                    if(logo == null){
+//                        noLogo = true;
+//                    } else {
+//                        imageView.setImageBitmap(logo);
+//                    }
+//                } catch (Exception e){
+//                    noLogo = true;
+//                }
+//            } else {
+//                imageView.setImageBitmap(logo);
+//            }
+//        }
     }
 }

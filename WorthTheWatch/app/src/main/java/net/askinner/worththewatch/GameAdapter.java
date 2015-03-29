@@ -81,8 +81,7 @@ public class GameAdapter extends BaseAdapter {
                         viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
                     }
                 } else {
-                    // Place holder for the rating
-                    viewHolder.scoreText.setText("[rating]");
+                    viewHolder.scoreText.setText(game.getAverageRating() + "");
                 }
             }
         });
@@ -92,7 +91,7 @@ public class GameAdapter extends BaseAdapter {
                 viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
             }
         } else {
-            viewHolder.scoreText.setText("[rating]");
+            viewHolder.scoreText.setText(game.getAverageRating() + "");
         }
 
         viewHolder.stadiumText.setText(game.getStadium());
@@ -106,6 +105,7 @@ public class GameAdapter extends BaseAdapter {
         // Away team logo
         Team awayTeam = game.getAwayTeam();
         awayTeam.putLogo(viewHolder.awayLogo);
+
 
         return convertView;
     }

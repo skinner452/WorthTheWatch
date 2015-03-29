@@ -18,18 +18,21 @@ import java.io.Serializable;
 /**
  * Created by Alec on 3/26/2015.
  */
-public class Team implements Serializable{
+public class Team {
 
     private String name;
     private Bitmap logo;
     private boolean noLogo;
     private boolean gettingLogo;
     private LogoDownloader ld;
+    private double averageRating;
 
     public Team(String name) {
         this.name = name;
         logo = null;
         ld = null;
+
+        // get average rating
     }
 
     public String getName() {

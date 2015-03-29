@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -33,47 +35,74 @@ public class RateGameActivity extends ActionBarActivity {
         setContentView(R.layout.activity_rate_game);
 
         final ListView charList = (ListView)findViewById(R.id.charList);
+        final TextView ratingNum = (TextView)findViewById(R.id.ratingNum);
+        final SeekBar ratingBar = (SeekBar)findViewById(R.id.ratingBar);
+        Button submitButton = (Button)findViewById(R.id.submitButton);
+
         try{
-            ArrayList<String> charListArray = new RetrieveChars().execute().get();
+            final ArrayList<String> charListArray = new RetrieveChars().execute().get();
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_checked,charListArray);
             charList.setAdapter(adapter);
+
+            ratingNum.setText("5");
+
+
+            ratingBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    ratingNum.setText("" + (progress+1));
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+
+            final int gameID = getIntent().getIntExtra("gameID",0);
+
+
+            submitButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Post review
+                    String deviceID = Settings.Secure.getString(v.getContext().getContentResolver(),
+                            Settings.Secure.ANDROID_ID);
+                    String chars = "";
+                    SparseBooleanArray checkedItems = charList.getCheckedItemPositions();
+                    for (int i = 0; i<charListArray.size();i++){
+                        if(checkedItems.get(i)){
+                            chars += charListArray.get(i);
+                            chars += ";";
+                        }
+                    }
+                    chars = chars.substring(0,chars.length()-1);
+
+                    int rating = ratingBar.getProgress()+1;
+                    try{
+                        boolean success = new PostReview().execute("" + gameID, "" + rating, deviceID, chars).get();
+                        if(success){
+                            Toast.makeText(getApplicationContext(),"Thanks for your rating!",Toast.LENGTH_LONG).show();
+                            onBackPressed();
+                        } else {
+                            Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e){
+                        Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
         } catch (Exception e){
 
         }
 
-        final TextView ratingNum = (TextView)findViewById(R.id.ratingNum);
-        ratingNum.setText("5");
 
-        SeekBar ratingBar = (SeekBar)findViewById(R.id.ratingBar);
-        ratingBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ratingNum.setText("" + (progress+1));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        int gameID = getIntent().getIntExtra("gameID",0);
-
-        Button submitButton = (Button)findViewById(R.id.submitButton);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Post review
-                String deviceID = Settings.Secure.getString(v.getContext().getContentResolver(),
-                        Settings.Secure.ANDROID_ID);
-                String chars = "";
-            }
-        });
 
 
     }

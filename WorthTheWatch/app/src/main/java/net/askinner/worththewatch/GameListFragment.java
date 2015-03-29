@@ -105,7 +105,7 @@ public class GameListFragment extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Game game = gameList.getGames(currentWeek).get(position);
                     Intent intent;
-                    if(game.hasScore()){
+                    if(game.isOver()){
                         intent = new Intent(getActivity(), AverageRatingActivity.class);
                     } else {
                         intent = new Intent(getActivity(), PredictedRatingActivity.class);

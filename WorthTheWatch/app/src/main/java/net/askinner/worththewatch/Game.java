@@ -1,14 +1,24 @@
 package net.askinner.worththewatch;
 
+import android.os.AsyncTask;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by Alec on 3/24/2015.
  */
-public class Game implements Serializable {
+public class Game {
 
     private int id;
     private Date date;
@@ -22,6 +32,7 @@ public class Game implements Serializable {
     private boolean isPlayoffs;
     private String[] channels;
     private int week;
+    private String averageRating;
     private boolean checked;
 
     public Game(String line) {
@@ -42,6 +53,16 @@ public class Game implements Serializable {
         isPlayoffs = Boolean.parseBoolean(lineSplit[7]);
         channels = lineSplit[8].split(";");
         week = Integer.parseInt(lineSplit[9]);
+
+        try{
+            averageRating = String.format("%.2f",Double.parseDouble(lineSplit[10]));
+        } catch (Exception e){
+            averageRating = "0.00";
+        }
+    }
+
+    public String getAverageRating() {
+        return averageRating;
     }
 
     public void setChecked(boolean checked) {
@@ -121,6 +142,24 @@ public class Game implements Serializable {
         DateFormat timeFormat = new SimpleDateFormat("h:mm a");
         String timeFormatted = timeFormat.format(date);
         return timeFormatted;
+    }
+
+    public boolean isOver() {
+        Date now = new Date();
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+
+        // 1 hour and 50 minutes after the game starts is when we can assume it is over
+        c.add(Calendar.HOUR, 1);
+        c.add(Calendar.MINUTE,50);
+        Date gameOver = c.getTime();
+
+        if(gameOver.before(now)){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String getFormattedChannels() {

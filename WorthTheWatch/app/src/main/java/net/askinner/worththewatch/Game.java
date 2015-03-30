@@ -32,7 +32,7 @@ public class Game {
     private boolean isPlayoffs;
     private String[] channels;
     private int week;
-    private String averageRating;
+    private double averageRating;
     private boolean checked;
 
     public Game(String line) {
@@ -55,14 +55,27 @@ public class Game {
         week = Integer.parseInt(lineSplit[9]);
 
         try{
-            averageRating = String.format("%.2f",Double.parseDouble(lineSplit[10]));
+            averageRating = Double.parseDouble(lineSplit[10]);
         } catch (Exception e){
-            averageRating = "0.00";
+            averageRating = 0.0;
         }
     }
 
+    public String getRating() {
+        if(date.after(new Date())){
+            return "-" + getPredictedRating() + "-";
+        } else {
+            return getAverageRating();
+        }
+    }
+
+    public String getPredictedRating() {
+        Double predicted = (homeTeam.getAverageRating() + awayTeam.getAverageRating())/2;
+        return String.format("%.2f",predicted);
+    }
+
     public String getAverageRating() {
-        return averageRating;
+        return String.format("%.2f",averageRating);
     }
 
     public void setChecked(boolean checked) {

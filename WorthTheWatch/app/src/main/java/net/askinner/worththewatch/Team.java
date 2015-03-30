@@ -26,11 +26,21 @@ public class Team {
     private Bitmap logo;
     private LogoDownloader ld;
     private double averageRating;
+    private double totalRating;
+    private double numRatings;
 
     public Team(String name) {
         this.name = name;
         logo = null;
         ld = null;
+    }
+
+    public void addRating(Double rating){
+        if(rating > 0){
+            numRatings++;
+            totalRating += rating;
+            averageRating = totalRating/numRatings;
+        }
     }
 
     public String getName() {
@@ -50,22 +60,16 @@ public class Team {
         }
 
         imageView.setImageBitmap(logo);
+    }
 
-//        if(!noLogo){
-//            if(logo == null){
-//                try{
-//                    logo = new LogoDownloader().execute(name).get();
-//                    if(logo == null){
-//                        noLogo = true;
-//                    } else {
-//                        imageView.setImageBitmap(logo);
-//                    }
-//                } catch (Exception e){
-//                    noLogo = true;
-//                }
-//            } else {
-//                imageView.setImageBitmap(logo);
-//            }
-//        }
+    public double getAverageRating() {
+        if(averageRating==0){
+            return 5.0;
+        }
+        return averageRating;
+    }
+
+    public String getFormattedAverageRating() {
+        return String.format("%.2f",getAverageRating());
     }
 }

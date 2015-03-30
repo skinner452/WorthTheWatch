@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -45,7 +46,7 @@ public class GameList{
         return true;
     }
 
-    private Team addTeam (String name) {
+    private Team getTeam (String name) {
         for (Team team : teams){
             if(team.getName().equals(name)){
                 return team;
@@ -60,10 +61,15 @@ public class GameList{
     public void addLine(String line) {
         Game g = new Game(line);
 
-        Team homeTeam = addTeam(g.getHomeTeamName());
-        g.setHomeTeam(homeTeam);
+        Team homeTeam = getTeam(g.getHomeTeamName());
+        Team awayTeam = getTeam(g.getAwayTeamName());
 
-        Team awayTeam = addTeam(g.getAwayTeamName());
+        if(g.getDate().before(new Date())){
+            awayTeam.addRating(Double.parseDouble(g.getRating()));
+            homeTeam.addRating(Double.parseDouble(g.getRating()));
+        }
+
+        g.setHomeTeam(homeTeam);
         g.setAwayTeam(awayTeam);
 
         int week = g.getWeek();
@@ -73,6 +79,8 @@ public class GameList{
             games.add(week,new ArrayList<Game>());
             games.get(week).add(g);
         }
+
+
     }
 
     public ArrayList<Game> getGames (int week){

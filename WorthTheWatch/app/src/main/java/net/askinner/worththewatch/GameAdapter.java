@@ -76,22 +76,18 @@ public class GameAdapter extends BaseAdapter {
             public void onClick(View v) {
                 game.setChecked(viewHolder.watchedCheck.isChecked());
 
-                if (viewHolder.watchedCheck.isChecked()) {
-                    if (game.getHomeScore() != null) {
-                        viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-                    }
+                if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
+                    viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
                 } else {
-                    viewHolder.scoreText.setText(game.getAverageRating() + "");
+                    viewHolder.scoreText.setText(game.getRating());
                 }
             }
         });
 
-        if (viewHolder.watchedCheck.isChecked()) {
-            if (game.getHomeScore() != null) {
-                viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-            }
+        if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
+            viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
         } else {
-            viewHolder.scoreText.setText(game.getAverageRating() + "");
+            viewHolder.scoreText.setText(game.getRating());
         }
 
         viewHolder.stadiumText.setText(game.getStadium());

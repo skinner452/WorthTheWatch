@@ -43,6 +43,7 @@ public class GameListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getActivity().setTitle("Matches");
         View view = inflater.inflate(R.layout.fragment_game_list, container, false);
 
         try{
@@ -55,8 +56,8 @@ public class GameListFragment extends Fragment {
             final TextView weekText = (TextView)view.findViewById(R.id.week);
             weekText.setText("Week " + (currentWeek+1));
 
-            GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
-            listview.setAdapter(adapter);
+//            GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
+//            listview.setAdapter(adapter);
 
             final CheckBox checkAll = (CheckBox)view.findViewById(R.id.checkAll);
             checkAll.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +110,9 @@ public class GameListFragment extends Fragment {
                         intent = new Intent(getActivity(), AverageRatingActivity.class);
                     } else {
                         intent = new Intent(getActivity(), PredictedRatingActivity.class);
+                        intent.putExtra("homeAverage",game.getHomeTeam().getFormattedAverageRating());
+                        intent.putExtra("awayAverage",game.getAwayTeam().getFormattedAverageRating());
+                        intent.putExtra("predicted",game.getPredictedRating());
                     }
 
                     intent.putExtra("gameID",game.getId());
@@ -129,6 +133,21 @@ public class GameListFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        // update list
+        try{
+            final ListView listview = (ListView) getView().findViewById(R.id.gameList);
+            final GameList gameList = new RetrieveGames().execute().get();
+            GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
+            listview.setAdapter(adapter);
+        } catch (Exception e){
+            // leave it how it was
+        }
+
+        super.onResume();
     }
 }
 

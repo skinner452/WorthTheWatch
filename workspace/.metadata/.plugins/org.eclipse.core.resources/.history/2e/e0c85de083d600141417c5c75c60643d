@@ -1,0 +1,8 @@
+
+public class Testing {
+    public static void main(String[] args) {
+    	String[] topCs = new String[3];
+        Integer[] topRs = new Integer[3];
+        System.out.println(topCs[0]);
+	}
+}

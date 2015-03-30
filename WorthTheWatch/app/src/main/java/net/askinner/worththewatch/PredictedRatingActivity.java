@@ -44,28 +44,16 @@ public class PredictedRatingActivity extends ActionBarActivity {
 
         ImageView awayLogo = (ImageView) findViewById(R.id.awayLogo);
         new Team(awayTeam).putLogo(awayLogo);
-    }
 
+        TextView homeAverage = (TextView) findViewById(R.id.homeAverage);
+        homeAverage.setText(getIntent().getStringExtra("homeAverage"));
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_predicted_rating, menu);
-        return true;
-    }
+        TextView awayAverage = (TextView) findViewById(R.id.awayAverage);
+        awayAverage.setText(getIntent().getStringExtra("awayAverage"));
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        TextView predicted = (TextView) findViewById(R.id.predictedRating);
+        predicted.setText(getIntent().getStringExtra("predicted"));
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        setTitle(homeTeam + " - " + awayTeam);
     }
 }

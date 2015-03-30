@@ -55,6 +55,9 @@ public class AverageRatingActivity extends ActionBarActivity {
         ImageView awayLogo = (ImageView) findViewById(R.id.awayLogo);
         new Team(awayTeam).putLogo(awayLogo);
 
+        setTitle(homeTeam + " - " + awayTeam);
+
+
         Button submitReview = (Button) findViewById(R.id.submitReviewButton);
         submitReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,54 +69,42 @@ public class AverageRatingActivity extends ActionBarActivity {
         });
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_average_rating, menu);
-        return true;
-    }
+    protected void onResume() {
+        // update the numbers
+        final int gameID = getIntent().getIntExtra("gameID",0);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        TextView averageRating = (TextView)findViewById(R.id.averageRating);
+        TextView numRatings = (TextView)findViewById(R.id.numRatings);
+        TextView char1 = (TextView)findViewById(R.id.char1);
+        TextView percent1 = (TextView)findViewById(R.id.percent1);
+        TextView char2 = (TextView)findViewById(R.id.char2);
+        TextView percent2 = (TextView)findViewById(R.id.percent2);
+        TextView char3 = (TextView)findViewById(R.id.char3);
+        TextView percent3 = (TextView)findViewById(R.id.percent3);
+        try{
+            String[] items = new AverageRatingDetails().execute(gameID).get();
+            averageRating.setText(items[0]);
+            numRatings.setText(items[1]);
+            char1.setText(items[2]);
+            percent1.setText(items[3]);
+            char2.setText(items[4]);
+            percent2.setText(items[5]);
+            char3.setText(items[6]);
+            percent3.setText(items[7]);
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
+        super.onResume();
     }
 }
 
-class GetAverageRating extends AsyncTask<Integer,Void,Boolean> {
-    private TextView averageRating;
-    private TextView numRatings;
-    private TextView char1;
-    private TextView percent1;
-    private TextView char2;
-    private TextView percent2;
-    private TextView char3;
-    private TextView percent3;
-
-    public GetAverageRating(TextView averageRating, TextView numRatings, TextView char1, TextView percent1, TextView char2, TextView percent2,
-                            TextView char3, TextView percent3){
-        this.averageRating = averageRating;
-        this.numRatings = numRatings;
-        this.char1 = char1;
-        this.percent1 = percent1;
-        this.char2 = char2;
-        this.percent2 = percent2;
-        this.char3 = char3;
-        this.percent3 = percent3;
-    }
+class AverageRatingDetails extends AsyncTask<Integer,Void,String[]> {
 
     @Override
-    protected Boolean doInBackground(Integer... params) {
+    protected String[] doInBackground(Integer... params) {
+        String[] output = new String[8];
         try {
             URL url = new URL("http://askinner.net/wtw/gameaverageratingdetailed.php?game_id=" + params[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -126,49 +117,84 @@ class GetAverageRating extends AsyncTask<Integer,Void,Boolean> {
 
             // first line is avg. rating
             line = in.readLine();
-            Double averageRating = Double.parseDouble(line);
-            this.averageRating.setText(String.format("%.2f",averageRating));
+
+            Double averageRating;
+            try{
+                averageRating = Double.parseDouble(line);
+            } catch (Exception e){
+                averageRating = 0.0;
+            }
+
+            output[0] = String.format("%.2f",averageRating);
 
             HashMap<String, Integer> topChars = new HashMap<String, Integer>();
+
+            int numRatings = 0;
             while((line = in.readLine()) != null){
+                numRatings++;
+
                 String[] lineSplit = line.split(";");
                 for (int i = 0; i < lineSplit.length ; i++){
                     String c = lineSplit[i];
-                    if(topChars.containsKey(c)){
-                        topChars.put(c,topChars.get(c)+1);
-                    } else {
-                        topChars.put(c,1);
+                    if(!c.equals("")){
+                        if(topChars.containsKey(c)){
+                            topChars.put(c,topChars.get(c)+1);
+                        } else {
+                            topChars.put(c,1);
+                        }
                     }
                 }
             }
 
-            String[] topCs = new String[3];
-            Integer[] topRs = new Integer[3];
-            for (int i = 0; i < 3; i++){
-                String topC = "";
-                int topR = 0;
-                for(String c : topChars.keySet()){
-                    int r = topChars.get(c);
-                    if(r > topR){
-                        topC = c;
-                        topR = r;
+            output[1] = numRatings + " Ratings";
+
+
+            if(numRatings > 0){
+                String[] topCs = new String[3];
+                Integer[] topRs = new Integer[3];
+                for (int i = 0; i < 3; i++){
+                    String topC = "";
+                    int topR = 0;
+                    for(String c : topChars.keySet()){
+                        int r = topChars.get(c);
+                        if(r > topR){
+                            topC = c;
+                            topR = r;
+                        }
+                    }
+                    topCs[i] = topC;
+                    topRs[i] = topR;
+
+                    topChars.remove(topC);
+                }
+
+                if(!topCs[0].equals("")){
+                    output[2] = topCs[0];
+                    Double p = ((double)topRs[0]/(double)numRatings)*100;
+                    output[3] = String.format("%.2f%%",p);
+
+                    if(!topCs[1].equals("")){
+                        output[4] = topCs[1];
+                        p = ((double)topRs[1]/(double)numRatings)*100;
+                        output[5] = String.format("%.2f%%",p);
+
+                        if(!topCs[2].equals("")){
+                            output[6] = topCs[2];
+                            p = ((double)topRs[2]/(double)numRatings)*100;
+                            output[7] = String.format("%.2f%%",p);
+                        }
                     }
                 }
-                topCs[i] = topC;
-                topRs[i] = topR;
 
-                topChars.remove(topC);
             }
 
 
             in.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return false;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
+        return output;
     }
 }

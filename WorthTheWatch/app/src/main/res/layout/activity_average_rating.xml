@@ -40,7 +40,7 @@
         android:text="Stadium"
         android:id="@+id/stadium"
         android:gravity="top|center_horizontal"
-        android:textSize="10dp"
+        android:textSize="12dp"
         android:layout_below="@+id/time"
         android:layout_toLeftOf="@+id/awayLogo"
         android:layout_toRightOf="@+id/homeLogo"
@@ -100,7 +100,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Average Rating"
-        android:id="@+id/textView18"
+        android:id="@+id/averageRatingTitle"
         android:layout_gravity="center_horizontal"
         android:paddingTop="10dp"
         android:layout_below="@+id/divider"
@@ -112,10 +112,10 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="5.00"
-        android:id="@+id/textView19"
+        android:id="@+id/averageRating"
         android:layout_gravity="center_horizontal"
         android:textSize="30dp"
-        android:layout_below="@+id/textView18"
+        android:layout_below="@+id/averageRatingTitle"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -123,9 +123,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Top Characteristics"
-        android:id="@+id/textView20"
+        android:id="@+id/topCharsTitle"
         android:textStyle="bold"
-        android:layout_below="@+id/textView24"
+        android:layout_below="@+id/numRatings"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -133,8 +133,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Characteristic 1"
-        android:id="@+id/textView21"
-        android:layout_below="@+id/textView20"
+        android:id="@+id/char1"
+        android:layout_below="@+id/topCharsTitle"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -142,8 +142,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="10 Ratings"
-        android:id="@+id/textView24"
-        android:layout_below="@+id/textView19"
+        android:id="@+id/numRatings"
+        android:layout_below="@+id/averageRating"
         android:layout_centerHorizontal="true"
         android:paddingBottom="10dp" />
 
@@ -160,8 +160,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="50%"
-        android:id="@+id/textView22"
-        android:layout_below="@+id/textView21"
+        android:id="@+id/percent1"
+        android:layout_below="@+id/char1"
         android:layout_centerHorizontal="true"
         android:paddingBottom="5dp" />
 
@@ -170,8 +170,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Characteristic 2"
-        android:id="@+id/textView23"
-        android:layout_below="@+id/textView22"
+        android:id="@+id/char2"
+        android:layout_below="@+id/percent1"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -179,9 +179,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="50%"
-        android:id="@+id/textView25"
+        android:id="@+id/percent2"
         android:paddingBottom="5dp"
-        android:layout_below="@+id/textView23"
+        android:layout_below="@+id/char2"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -189,8 +189,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Characteristic 3"
-        android:id="@+id/textView26"
-        android:layout_below="@+id/textView25"
+        android:id="@+id/char3"
+        android:layout_below="@+id/percent2"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -198,9 +198,9 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="50%"
-        android:id="@+id/textView27"
+        android:id="@+id/percent3"
         android:paddingBottom="5dp"
-        android:layout_below="@+id/textView26"
+        android:layout_below="@+id/char3"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

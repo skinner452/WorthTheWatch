@@ -1,0 +1,22 @@
+package net.skinner.scraper;
+
+import java.util.Date;
+
+public class Game {
+	private boolean playoffs;
+	private String stadium;
+	private String channels;
+	private String homeTeam;
+	private String awayTeam;
+	private Integer homeScore;
+	private Integer awayScore;
+	private Date date;
+	private int week;
+	
+	public Game(String homeTeam, String awayTeam, Integer homeScore, Integer awayScore, Date date,
+										int week, String stadium, String channels, boolean playoffs) {
+		// TODO Auto-generated constructor stub
+	}
+
+	
+}

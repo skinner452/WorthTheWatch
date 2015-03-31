@@ -53,11 +53,14 @@ JOIN Game ON game_id = Game.id
 JOIN Team home ON home_id = home.id
 JOIN Team away ON away_id = away.id;
 
-SELECT * FROM Game
+SELECT Game.id, home.name, away.name, date FROM Game
 JOIN Team home ON home_id = home.id
-JOIN Team away ON away_id = away.id;
+JOIN Team away ON away_id = away.id
+ORDER BY date ASC;
 
 SELECT device_id,game_id FROM Rating WHERE device_id = 'e7e16360e292f03b' AND game_id = 28;
+
+UPDATE Game SET week = 14 WHERE id = 55;
 
 DELETE FROM Game;
 DELETE FROM Rating;

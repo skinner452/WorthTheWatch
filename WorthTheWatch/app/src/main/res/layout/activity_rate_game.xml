@@ -24,7 +24,7 @@
         android:layout_gravity="center_horizontal"
         android:indeterminate="false"
         android:max="9"
-        android:progress="5"
+        android:progress="4"
         android:layout_below="@+id/YourRatingTitle"
         android:layout_centerHorizontal="true" />
 

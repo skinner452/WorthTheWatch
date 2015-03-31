@@ -64,7 +64,7 @@ public class GameList{
         Team homeTeam = getTeam(g.getHomeTeamName());
         Team awayTeam = getTeam(g.getAwayTeamName());
 
-        if(g.getDate().before(new Date())){
+        if(g.isOver()){
             awayTeam.addRating(Double.parseDouble(g.getRating()));
             homeTeam.addRating(Double.parseDouble(g.getRating()));
         }

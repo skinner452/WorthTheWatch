@@ -62,10 +62,10 @@ public class Game {
     }
 
     public String getRating() {
-        if(date.after(new Date())){
-            return "-" + getPredictedRating() + "-";
-        } else {
+        if(isOver()){
             return getAverageRating();
+        } else {
+            return "-" + getPredictedRating() + "-";
         }
     }
 

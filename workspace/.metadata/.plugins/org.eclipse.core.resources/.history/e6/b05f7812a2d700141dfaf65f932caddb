@@ -1,0 +1,18 @@
+package net.skinner.scraper;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+
+public class ScheduleScraper {
+	public static void main(String[] args) {
+		ScheduleScraper.run();
+	}
+	
+	private static void run() {
+		String baseURL = "http://www.mlssoccer.com/schedule";
+		for (int month = 3; month <= 12; month++) {
+			Connection conn = Jsoup.connect(baseURL + "?month=" + month);
+			Document scheduleDoc = conn.get();
+		}
+	}
+}

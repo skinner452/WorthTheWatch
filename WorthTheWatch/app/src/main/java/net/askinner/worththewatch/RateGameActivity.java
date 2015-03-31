@@ -44,7 +44,7 @@ public class RateGameActivity extends ActionBarActivity {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_checked,charListArray);
             charList.setAdapter(adapter);
 
-            ratingNum.setText("5");
+            ratingNum.setText((ratingBar.getProgress()+1) + "");
 
 
             ratingBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -85,7 +85,7 @@ public class RateGameActivity extends ActionBarActivity {
                         chars = chars.substring(0,chars.length()-1);
                     }
 
-                    int rating = ratingBar.getProgress()+1;
+                    int rating = Integer.parseInt(ratingNum.getText() + "");
                     try{
                         boolean success = new PostReview().execute("" + gameID, "" + rating, deviceID, chars).get();
                         if(success){
@@ -103,6 +103,8 @@ public class RateGameActivity extends ActionBarActivity {
         } catch (Exception e){
 
         }
+
+        setTitle("Rate Game");
     }
 }
 

@@ -32,139 +32,138 @@ public class ScheduleScraper {
 	private static void run() throws SQLException {
 		// Test the database connection before doing anything
 		java.sql.Connection conn = getConnection();
-		ArrayList<Game> games;
-		
-		boolean areGames = areGames(conn);
 		conn.close();
 		
-		if(areGames){
+		if(areGames(conn)){
 			Calendar c = Calendar.getInstance();
-			int month = c.get(Calendar.MONTH)+1;
-			games = scrape(month,12);
-			insert(games);
+			int month = c.MONTH;
+			
 		} else {
-			games = scrape(3,12);
-			update(games);
+			ArrayList<Game> games = scrape(3,12);
 		}
 		
 		if(games == null){
 			return;
 		}
-
+		
+		
+		// Upload the games to the database
+		conn = getConnection();
+		
+		PreparedStatement statement = null;
+		ResultSet rs;
+		
+		try {
+			statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date FROM Game "
+					+ "JOIN Team home ON home_id = home.id "
+					+ "JOIN Team away ON away_id = away.id "
+					+ "ORDER BY date ASC");
+			rs = statement.executeQuery();
+			int count = 0;
+			ArrayList<Game> leftOverGames = new ArrayList<Game>();
+			while(rs.next()){
+				count++;
+				if(count == 1){
+					System.out.println("Database has data, updating all games");
+				}
+				
+				int id = rs.getInt("Game.id");
+				String homeTeam = rs.getString("home.name");
+				String awayTeam = rs.getString("away.name");
+				Long dateLong = rs.getLong("date");
+				
+				boolean match = false;
+				Game gameToRemove = null;
+				for (Game game : games) {
+					if(game.getHomeTeam().equals(homeTeam) && game.getAwayTeam().equals(awayTeam) && game.getDate().getTime() == dateLong){
+						match = true;
+						gameToRemove = game;
+						break;
+					}
+				}
+				
+				if(match){
+					games.remove(gameToRemove);
+				} else {
+					leftOverGames.add(new Game(homeTeam, awayTeam, id));
+				}
+				
+				
+			}
+			
+			if(count == 0){
+				// Insert ALL games
+				System.out.println("Database is empty, inserting all games");
+			} else {
+				// Update ALL games
+				for (Game game : games) {
+					Game gameToRemove = null;
+					for (Game leftOverGame : leftOverGames) {
+						if(game.getHomeTeam().equals(leftOverGame.getHomeTeam()) && game.getAwayTeam().equals(leftOverGame.getAwayTeam())){
+							gameToRemove = leftOverGame;
+							break;
+						}
+					}
+					
+					if(gameToRemove == null){
+						// This will run for all matched games (Fix later)
+						// It's a completely new game, add it (Probably only applicable for playoffs)
+					} else {
+						int id = gameToRemove.getId();
+						System.out.println("----");
+						System.out.println("Replacing");
+						System.out.println(gameToRemove);
+						System.out.println("With");
+						System.out.println(game);
+						
+						leftOverGames.remove(gameToRemove);
+						
+						System.out.println("ID: " + id);
+						
+						// Update the game in the database (Make sure to use the same id as the leftOverGame)
+						statement = conn.prepareStatement("UPDATE Game SET date=?, home_score=?, away_score=?, tv=?, week=? "
+								+ "WHERE id=?");
+						statement.setLong(1, game.getDate().getTime());
+						if(game.getHomeScore() == null){
+							statement.setNull(2, Types.INTEGER);
+							statement.setNull(3, Types.INTEGER);
+						} else {
+							statement.setInt(2, game.getHomeScore());
+							statement.setInt(3, game.getAwayScore());
+						}
+						statement.setString(4, game.getChannels());
+						statement.setInt(5, game.getWeek());
+						statement.setInt(6, id);
+						statement.executeUpdate();
+						System.out.println("Updated " + statement.getUpdateCount() + " rows");
+						System.out.println("----");
+					}
+				}
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private static boolean areGames(Connection conn) {
+		PreparedStatement statement = conn.prepareStatement("SELECT * FROM Games");
+		ResultSet rs = statement.executeQuery();
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException {
 		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
 		System.out.println("Connection to database successful!");
 		return conn;
-	}
-	
-	private static void update(ArrayList<Game> games) throws SQLException {
-		java.sql.Connection conn = getConnection();
-		
-		PreparedStatement statement = null;
-		ResultSet rs;
-		
-		statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, homeScore, awayScore, date FROM Game "
-				+ "JOIN Team home ON home_id = home.id "
-				+ "JOIN Team away ON away_id = away.id "
-				+ "ORDER BY date ASC");
-		rs = statement.executeQuery();
-		ArrayList<Game> leftOverGames = new ArrayList<Game>();
-		
-		while(rs.next()){
-			int id = rs.getInt("Game.id");
-			String homeTeam = rs.getString("home.name");
-			String awayTeam = rs.getString("away.name");
-			int homeScore = rs.getInt("homeScore");
-			int awayScore = rs.getInt("awayScore");
-			Long dateLong = rs.getLong("date");
-			
-			boolean match = false;
-			Game gameToRemove = null;
-			for (Game game : games) {
-				if(game.getHomeTeam().equals(homeTeam) && game.getAwayTeam().equals(awayTeam) && game.getDate().getTime() == dateLong){
-					match = true;
-					gameToRemove = game;
-					break;
-				}
-			}
-			
-			if(match){
-				games.remove(gameToRemove);
-			} else {
-				leftOverGames.add(new Game(homeTeam, awayTeam, homeScore, awayScore, id));
-			}
-		}
-		
-		// Update ALL games
-		for (Game game : games) {
-			Game gameToRemove = null;
-			for (Game leftOverGame : leftOverGames) {
-				if(game.getHomeTeam().equals(leftOverGame.getHomeTeam()) && game.getAwayTeam().equals(leftOverGame.getAwayTeam())){
-					gameToRemove = leftOverGame;
-					break;
-				}
-			}
-			
-			if(gameToRemove == null){
-				// Do a standard update
-				int id = getGameID(game);
-			} else {
-				int id = gameToRemove.getId();
-				System.out.println("---------");
-				System.out.println("Replacing");
-				System.out.println(gameToRemove);
-				System.out.println("With");
-				System.out.println(game);
-				System.out.println("ID: " + id);
-				
-				leftOverGames.remove(gameToRemove);
-				
-				// Update the game in the database
-				updateGame(conn, id, game);
-				
-				System.out.println("Updated " + statement.getUpdateCount() + " rows");
-				System.out.println("---------");
-			}
-		}
-			
-		conn.close();
-	}
-
-	private static int getGameID(Game game) {
-		return 0;
-	}
-
-	private static void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
-		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, home_score=?, away_score=?, tv=?, week=? "
-				+ "WHERE id=?");
-		statement.setLong(1, game.getDate().getTime());
-		if(game.getHomeScore() == null){
-			statement.setNull(2, Types.INTEGER);
-			statement.setNull(3, Types.INTEGER);
-		} else {
-			statement.setInt(2, game.getHomeScore());
-			statement.setInt(3, game.getAwayScore());
-		}
-		statement.setString(4, game.getChannels());
-		statement.setInt(5, game.getWeek());
-		statement.setInt(6, id);
-		statement.executeUpdate();
-	}
-
-	private static void insert(ArrayList<Game> games) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private static boolean areGames(java.sql.Connection conn) throws SQLException {
-		PreparedStatement statement = conn.prepareStatement("SELECT * FROM Game");
-		ResultSet rs = statement.executeQuery();
-		if(rs.next()){
-			return true;
-		}
-		return false;
 	}
 	
 	private static ArrayList<Game> scrape(int startMonth, int endMonth) {

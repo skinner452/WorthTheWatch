@@ -54,7 +54,7 @@ public class ScheduleScraper {
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException {
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
 		System.out.println("Connection to database successful!");
 		return conn;
 	}
@@ -133,6 +133,7 @@ public class ScheduleScraper {
 	}
 
 	private static int getGameID(Game game) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 

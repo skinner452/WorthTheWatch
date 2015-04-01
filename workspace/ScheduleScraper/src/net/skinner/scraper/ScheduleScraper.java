@@ -1,6 +1,9 @@
 package net.skinner.scraper;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -24,48 +28,44 @@ public class ScheduleScraper {
 	public static void main(String[] args) {
 		try {
 			ScheduleScraper.run();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void run() throws SQLException {
-		// Test the database connection before doing anything
-		java.sql.Connection conn = getConnection();
+	private static void run() throws SQLException, IOException {
 		ArrayList<Game> games;
 		
-		boolean areGames = areGames(conn);
-		conn.close();
-		
-		if(areGames){
-			Calendar c = Calendar.getInstance();
-			int month = c.get(Calendar.MONTH)+1;
-			games = scrape(month,12);
-			insert(games);
-		} else {
+		// If there are games in the db, update them, or else insert them
+		if(areGames()){
 			games = scrape(3,12);
 			update(games);
+		} else {
+			games = scrape(3,12);
+			insert(games);
 		}
-		
-		if(games == null){
-			return;
-		}
-
 	}
 	
-	private static java.sql.Connection getConnection() throws SQLException {
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
+	private static java.sql.Connection getConnection() throws SQLException, IOException {
+		Properties props = new Properties();
+		String propName = "dbInfo.properties";
+		InputStream in = new FileInputStream(propName);
+		props.load(in);
+		in.close();
+		
+		java.sql.Connection conn = DriverManager.getConnection(props.getProperty("url"),props.getProperty("user"),
+				props.getProperty("password"));
 		System.out.println("Connection to database successful!");
 		return conn;
 	}
 	
-	private static void update(ArrayList<Game> games) throws SQLException {
+	private static void update(ArrayList<Game> games) throws SQLException, IOException {
 		java.sql.Connection conn = getConnection();
 		
 		PreparedStatement statement = null;
 		ResultSet rs;
 		
-		statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, homeScore, awayScore, date FROM Game "
+		statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date FROM Game "
 				+ "JOIN Team home ON home_id = home.id "
 				+ "JOIN Team away ON away_id = away.id "
 				+ "ORDER BY date ASC");
@@ -76,28 +76,29 @@ public class ScheduleScraper {
 			int id = rs.getInt("Game.id");
 			String homeTeam = rs.getString("home.name");
 			String awayTeam = rs.getString("away.name");
-			int homeScore = rs.getInt("homeScore");
-			int awayScore = rs.getInt("awayScore");
 			Long dateLong = rs.getLong("date");
 			
 			boolean match = false;
-			Game gameToRemove = null;
+			Game matchedGame = null;
 			for (Game game : games) {
 				if(game.getHomeTeam().equals(homeTeam) && game.getAwayTeam().equals(awayTeam) && game.getDate().getTime() == dateLong){
 					match = true;
-					gameToRemove = game;
+					matchedGame = game;
 					break;
 				}
 			}
 			
 			if(match){
-				games.remove(gameToRemove);
+				// Do a standard update
+				updateGame(conn, id, matchedGame);
+				games.remove(matchedGame);
 			} else {
-				leftOverGames.add(new Game(homeTeam, awayTeam, homeScore, awayScore, id));
+				// Add to left over pile to check later
+				leftOverGames.add(new Game(homeTeam, awayTeam, id));
 			}
 		}
 		
-		// Update ALL games
+		// Update database with changed match dates
 		for (Game game : games) {
 			Game gameToRemove = null;
 			for (Game leftOverGame : leftOverGames) {
@@ -108,23 +109,18 @@ public class ScheduleScraper {
 			}
 			
 			if(gameToRemove == null){
-				// Do a standard update
-				int id = getGameID(game);
+				// This is a new game, add
+				insertGame(conn, game);
 			} else {
 				int id = gameToRemove.getId();
-				System.out.println("---------");
-				System.out.println("Replacing");
-				System.out.println(gameToRemove);
-				System.out.println("With");
-				System.out.println(game);
-				System.out.println("ID: " + id);
-				
 				leftOverGames.remove(gameToRemove);
+				
+				System.out.println("---------");
+				System.out.println("Changed date");
 				
 				// Update the game in the database
 				updateGame(conn, id, game);
 				
-				System.out.println("Updated " + statement.getUpdateCount() + " rows");
 				System.out.println("---------");
 			}
 		}
@@ -132,36 +128,45 @@ public class ScheduleScraper {
 		conn.close();
 	}
 
-	private static int getGameID(Game game) {
-		return 0;
+	private static void insertGame(java.sql.Connection conn, Game game) {
+		System.out.println("Inserting " + game + "\n");
+		
+		// Get both team ID's
+		PreparedStatement statement = conn.prepareStatement("")
 	}
 
 	private static void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
-		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, home_score=?, away_score=?, tv=?, week=? "
+		System.out.println("Updating " + game + " at id: " + id + "\n");
+		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, week=?, home_score=?, away_score=?, tv=?, stadium=? "
 				+ "WHERE id=?");
 		statement.setLong(1, game.getDate().getTime());
+		statement.setInt(2, game.getWeek());
 		if(game.getHomeScore() == null){
-			statement.setNull(2, Types.INTEGER);
 			statement.setNull(3, Types.INTEGER);
+			statement.setNull(4, Types.INTEGER);
 		} else {
-			statement.setInt(2, game.getHomeScore());
-			statement.setInt(3, game.getAwayScore());
+			statement.setInt(3, game.getHomeScore());
+			statement.setInt(4, game.getAwayScore());
 		}
-		statement.setString(4, game.getChannels());
-		statement.setInt(5, game.getWeek());
-		statement.setInt(6, id);
+		statement.setString(5, game.getChannels());
+		statement.setString(6, game.getStadium());
+		statement.setInt(7, id);
 		statement.executeUpdate();
 	}
 
 	private static void insert(ArrayList<Game> games) {
-		// TODO Auto-generated method stub
 		
 	}
 
-	private static boolean areGames(java.sql.Connection conn) throws SQLException {
+	private static boolean areGames() throws SQLException, IOException {
+		java.sql.Connection conn = getConnection();
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM Game");
 		ResultSet rs = statement.executeQuery();
-		if(rs.next()){
+		
+		boolean areGames = rs.next();
+		conn.close();
+		
+		if(areGames){
 			return true;
 		}
 		return false;
@@ -204,7 +209,7 @@ public class ScheduleScraper {
 					String competition = gameRow.select("span.competetion").text();
 					if(competition.contains("MLS")){
 						boolean playoffs = false;
-						if(competition.contains("Playoffs") || competition.contains("Cup")){
+						if(!competition.contains("Regular Season")){
 							playoffs = true;
 						}
 						

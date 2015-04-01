@@ -68,17 +68,15 @@ public class Game {
 	}
 
 	// Database game
-	public Game(String homeTeam, String awayTeam, int homeScore, int awayScore, int id){
+	public Game(String homeTeam, String awayTeam, int id){
 		this.homeTeam = homeTeam;
 		this.awayTeam = awayTeam;
-		this.homeScore = homeScore;
-		this.awayScore = awayScore;
 		this.id = id;
 	}
 	
 	@Override
 	public String toString() {
-		return date + ": " + homeTeam + " - " + awayTeam;
+		return date + ": " + homeTeam + " - " + awayTeam + " (" + homeScore + " - " + awayScore + ")";
 	}
 
 	

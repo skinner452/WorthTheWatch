@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -27,13 +30,35 @@ import org.jsoup.select.Elements;
 public class ScheduleScraper {
 	public static void main(String[] args) {
 		try {
-			ScheduleScraper.run();
+			final Counter counter = new Counter();
+			ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+			executorService.scheduleAtFixedRate(new Runnable() {
+				
+				public void run() {
+					try {
+						if(counter.getCount() == 0){
+							fullScrape();
+						} else {
+							scoreScrape();
+							
+							if(counter.getCount() == 12){
+								counter.set(0);
+							}
+						}
+						counter.add();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}, 0, 1, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void run() throws SQLException, IOException {
+	private static void fullScrape() throws SQLException, IOException {
 		ArrayList<Game> games;
 		
 		// If there are games in the db, update them, or else insert them
@@ -44,6 +69,12 @@ public class ScheduleScraper {
 			games = scrape(3,12);
 			insert(games);
 		}
+	}
+
+	private static void scoreScrape() throws SQLException, IOException {
+		int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
+		ArrayList<Game> games = scrape(m,m);
+		updateScores(games);
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException, IOException {
@@ -57,6 +88,45 @@ public class ScheduleScraper {
 				props.getProperty("password"));
 		System.out.println("Connection to database successful!");
 		return conn;
+	}
+	
+	private static void updateScores(ArrayList<Game> games) throws SQLException, IOException {
+		java.sql.Connection conn = getConnection();
+		PreparedStatement statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date, home_score FROM Game "
+				+ "JOIN Team home ON home_id = home.id "
+				+ "JOIN Team away ON away_id = away.id "
+				+ "ORDER BY date ASC");
+		ResultSet rs = statement.executeQuery();
+		while(rs.next()){
+			int id = rs.getInt("Game.id");
+			String homeTeam = rs.getString("home.name");
+			String awayTeam = rs.getString("away.name");
+			Long dateLong = rs.getLong("date");
+			
+			rs.getInt("home_score");
+			// if the score is not null check if there is a new score
+			if(rs.wasNull()){
+				Game gameToRemove = null;
+				for (Game game : games) {
+					if(game.getHomeScore() != null){
+						if(game.getHomeTeam().equals(homeTeam) && game.getAwayTeam().equals(awayTeam)
+									&& game.getDate().getTime() == dateLong){
+							gameToRemove = game;
+							statement = conn.prepareStatement("UPDATE Game SET home_score=?, away_score=? WHERE id=?");
+							statement.setInt(1, game.getHomeScore());
+							statement.setInt(2, game.getAwayScore());
+							statement.setInt(3, id);
+							statement.executeUpdate();
+							System.out.println("Updated score for " + game);
+							break;
+						}
+					}
+				}
+				if(gameToRemove != null){
+					games.remove(gameToRemove);
+				}
+			}
+		}
 	}
 	
 	private static void update(ArrayList<Game> games) throws SQLException, IOException {
@@ -109,7 +179,7 @@ public class ScheduleScraper {
 			}
 			
 			if(gameToRemove == null){
-				// This is a new game, add
+				// This is a new game, insert into db
 				insertGame(conn, game);
 			} else {
 				int id = gameToRemove.getId();
@@ -128,11 +198,49 @@ public class ScheduleScraper {
 		conn.close();
 	}
 
-	private static void insertGame(java.sql.Connection conn, Game game) {
+	private static void insertGame(java.sql.Connection conn, Game game) throws SQLException {
 		System.out.println("Inserting " + game + "\n");
 		
-		// Get both team ID's
-		PreparedStatement statement = conn.prepareStatement("")
+		// Get home team ID
+		int homeID = getTeamID(conn, game.getHomeTeam());
+		int awayID = getTeamID(conn, game.getAwayTeam());
+		
+		PreparedStatement statement = conn.prepareStatement("INSERT INTO Game (home_id, away_id, date, week, home_score, away_score, "
+				+ "tv, stadium, playoffs) "
+				+ "VALUES (?,?,?,?,?,?,?,?,?)");
+		statement.setInt(1, homeID);
+		statement.setInt(2, awayID);
+		statement.setLong(3, game.getDate().getTime());
+		statement.setInt(4, game.getWeek());
+		if(game.getHomeScore() == null){
+			statement.setNull(5, Types.INTEGER);
+			statement.setNull(6, Types.INTEGER);
+		} else {
+			statement.setInt(5, game.getHomeScore());
+			statement.setInt(6, game.getAwayScore());
+		}
+		statement.setString(7, game.getChannels());
+		statement.setString(8, game.getStadium());
+		statement.setBoolean(9, game.isPlayoffs());
+		statement.executeUpdate();
+	}
+
+	// Gets the team ID by team name
+	// If the team doesn't exist, this method will create it
+	private static int getTeamID(java.sql.Connection conn, String teamName) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement("SELECT id FROM Team WHERE name = ?");
+		statement.setString(1, teamName);
+		ResultSet rs = statement.executeQuery();
+		if(rs.next()){
+			return rs.getInt(1);
+		} else {
+			statement = conn.prepareStatement("INSERT INTO Team (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			statement.setString(1, teamName);
+			statement.executeUpdate();
+			rs = statement.getGeneratedKeys();
+			rs.next();
+			return rs.getInt(1);
+		}
 	}
 
 	private static void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
@@ -154,8 +262,12 @@ public class ScheduleScraper {
 		statement.executeUpdate();
 	}
 
-	private static void insert(ArrayList<Game> games) {
-		
+	private static void insert(ArrayList<Game> games) throws SQLException, IOException {
+		java.sql.Connection conn = getConnection();
+		for (Game game : games) {
+			insertGame(conn, game);
+		}
+		conn.close();
 	}
 
 	private static boolean areGames() throws SQLException, IOException {

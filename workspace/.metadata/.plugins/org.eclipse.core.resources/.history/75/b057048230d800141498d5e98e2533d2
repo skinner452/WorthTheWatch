@@ -26,7 +26,7 @@ public class ScheduleScraper {
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException {
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
 		System.out.println("Connection to database successful!");
 		return conn;
 	}
@@ -149,22 +149,23 @@ public class ScheduleScraper {
 		java.sql.Connection conn;
 		try {
 			conn = getConnection();
-			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return;
 		}
-		
+		conn.close();
 		
 		ArrayList<Game> games = scrape();
-		if(games == null){
-			return;
-		}
 		
 		
 		// Upload the games to the database
 		try {
 			conn = getConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxxxx");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;

@@ -26,12 +26,15 @@ public class ScheduleScraper {
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException {
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
 		System.out.println("Connection to database successful!");
 		return conn;
 	}
 	
-	private static ArrayList<Game> scrape() {
+	private static void run() {
+		// Test the database connection before doing anything
+		java.sql.Connection conn = getConnection();
+		
 		ArrayList<Game> games = new ArrayList<Game>();
 		String baseURL = "http://www.mlssoccer.com/schedule";
 		
@@ -40,17 +43,17 @@ public class ScheduleScraper {
 		DateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy h:mma zzz");
 		for (int month = 3; month <= 12; month++) {
 			System.out.println("Scraping month " + month);
-			Connection Jconn = Jsoup.connect(baseURL + "?month=" + month);
+			Connection conn = Jsoup.connect(baseURL + "?month=" + month);
 			
 			Document scheduleDoc = null;
 			int retries = 0;
 			while(scheduleDoc == null){
 				try {
-					scheduleDoc = Jconn.get();
+					scheduleDoc = conn.get();
 				} catch (IOException e) {
 					if(retries >= 10){
 						e.printStackTrace();
-						return null;
+						return;
 					}
 					System.out.println("Failed to get document, trying again");
 					retries++;
@@ -141,30 +144,10 @@ public class ScheduleScraper {
 				
 		}
 		
-		return games;
-	}
-	
-	private static void run() {
-		// Test the database connection before doing anything
-		java.sql.Connection conn;
-		try {
-			conn = getConnection();
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		
-		ArrayList<Game> games = scrape();
-		if(games == null){
-			return;
-		}
-		
-		
 		// Upload the games to the database
+		java.sql.Connection conn = null;
 		try {
-			conn = getConnection();
+			conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxxxx");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;

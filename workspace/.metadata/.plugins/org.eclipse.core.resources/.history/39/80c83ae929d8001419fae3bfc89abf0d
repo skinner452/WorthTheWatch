@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,17 +24,9 @@ public class ScheduleScraper {
 	public static void main(String[] args) {
 		ScheduleScraper.run();
 	}
-	
 	private static void run() {
 		// Test the database connection before doing anything
-		try {
-			java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
-			System.out.println("Connection to database successful!");
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
+		java.sql.Connection conn = getC
 		
 		ArrayList<Game> games = new ArrayList<Game>();
 		String baseURL = "http://www.mlssoccer.com/schedule";
@@ -146,7 +140,7 @@ public class ScheduleScraper {
 		// Upload the games to the database
 		java.sql.Connection conn = null;
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
+			conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxxxx");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
@@ -187,41 +181,82 @@ public class ScheduleScraper {
 				if(match){
 					games.remove(gameToRemove);
 				} else {
-					System.out.println("No match for id:" + id);
 					leftOverGames.add(new Game(homeTeam, awayTeam, id));
 				}
 				
 				
 			}
 			
-			for (Game game : games) {
-				Game gameToRemove = null;
-				for (Game leftOverGame : leftOverGames) {
-					if(game.getHomeTeam().equals(leftOverGame.getHomeTeam()) && game.getAwayTeam().equals(leftOverGame.getAwayTeam())){
-						gameToRemove = game;
-					}
-				}
-				
-				if(gameToRemove == null){
-					// It's a new game, add it (Not very likely though)
-				} else {
-					games.remove(gameToRemove);
-					
-					// Update the game in the database (Make sure to use the same id as the leftOverGame)
-				}
-			}
-			
-			System.out.println("No matching games found for " + leftOverGames.size());
-			System.out.println("Games left in games: " + games.size());
-			
 			if(count == 0){
 				// Insert ALL games
 				System.out.println("Database is empty, inserting all games");
+			} else {
+				// Update ALL games
+				for (Game game : games) {
+					Game gameToRemove = null;
+					for (Game leftOverGame : leftOverGames) {
+						if(game.getHomeTeam().equals(leftOverGame.getHomeTeam()) && game.getAwayTeam().equals(leftOverGame.getAwayTeam())){
+							gameToRemove = leftOverGame;
+							break;
+						}
+					}
+					
+					if(gameToRemove == null){
+						// This will run for all matched games (Fix later)
+						// It's a completely new game, add it (Probably only applicable for playoffs)
+					} else {
+						int id = gameToRemove.getId();
+						System.out.println("----");
+						System.out.println("Replacing");
+						System.out.println(gameToRemove);
+						System.out.println("With");
+						System.out.println(game);
+						
+						leftOverGames.remove(gameToRemove);
+						
+						System.out.println("ID: " + id);
+						
+						// Update the game in the database (Make sure to use the same id as the leftOverGame)
+						statement = conn.prepareStatement("UPDATE Game SET date=?, home_score=?, away_score=?, tv=?, week=? "
+								+ "WHERE id=?");
+						statement.setLong(1, game.getDate().getTime());
+						if(game.getHomeScore() == null){
+							statement.setNull(2, Types.INTEGER);
+							statement.setNull(3, Types.INTEGER);
+						} else {
+							statement.setInt(2, game.getHomeScore());
+							statement.setInt(3, game.getAwayScore());
+						}
+						statement.setString(4, game.getChannels());
+						statement.setInt(5, game.getWeek());
+						statement.setInt(6, id);
+						statement.executeUpdate();
+						System.out.println("Updated " + statement.getUpdateCount() + " rows");
+						System.out.println("----");
+					}
+				}
 			}
+			
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
+	
+
+	
+	private java.sql.Connection getConnection() throws SQLException {
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
+		System.out.println("Connection to database successful!");
+		return conn;
+	}
+	
 }

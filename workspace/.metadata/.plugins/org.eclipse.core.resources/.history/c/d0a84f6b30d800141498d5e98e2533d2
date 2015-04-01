@@ -26,12 +26,12 @@ public class ScheduleScraper {
 	}
 	
 	private static java.sql.Connection getConnection() throws SQLException {
-		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxx");
+		java.sql.Connection conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","neak9747");
 		System.out.println("Connection to database successful!");
 		return conn;
 	}
 	
-	private static ArrayList<Game> scrape() {
+	private ArrayList<Game> scrape() {
 		ArrayList<Game> games = new ArrayList<Game>();
 		String baseURL = "http://www.mlssoccer.com/schedule";
 		
@@ -140,31 +140,24 @@ public class ScheduleScraper {
 			}
 				
 		}
-		
-		return games;
 	}
 	
 	private static void run() {
 		// Test the database connection before doing anything
-		java.sql.Connection conn;
-		try {
-			conn = getConnection();
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
+		java.sql.Connection conn = getConnection();
+		conn.close();
 		
-		
-		ArrayList<Game> games = scrape();
-		if(games == null){
-			return;
-		}
 		
 		
 		// Upload the games to the database
 		try {
 			conn = getConnection();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return
+		}
+		try {
+			conn = DriverManager.getConnection("jdbc:mysql://askinner.net:3306/skin452_wtw","skin452_admin","xxxxx");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;

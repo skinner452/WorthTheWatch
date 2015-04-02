@@ -46,7 +46,7 @@ JOIN Team away ON away_id = away.id;
 
 SELECT * FROM Game;
 
-SELECT * FROM Team;
+SELECT id FROM Team WHERE name = 'Sporting KC';
 
 SELECT * FROM Rating
 JOIN Game ON game_id = Game.id
@@ -60,7 +60,7 @@ ORDER BY date ASC;
 
 SELECT device_id,game_id FROM Rating WHERE device_id = 'e7e16360e292f03b' AND game_id = 28;
 
-UPDATE Game SET week = 14 WHERE id = 55;
+UPDATE Game SET home_score = null WHERE id = 4;
 
 DELETE FROM Game;
 DELETE FROM Rating;

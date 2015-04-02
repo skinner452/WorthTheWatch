@@ -35,6 +35,9 @@ public class ScheduleScraper {
 			executorService.scheduleAtFixedRate(new Runnable() {
 				
 				public void run() {
+					System.out.println();
+					System.out.println("-----------------");
+					System.out.println("Started at: " + new Date());
 					try {
 						if(counter.getCount() == 0){
 							fullScrape();
@@ -51,22 +54,23 @@ public class ScheduleScraper {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					System.out.println("Finished at: " + new Date());
+					System.out.println("-----------------");
+					System.out.println();
 				}
-			}, 0, 1, TimeUnit.MINUTES);
+			}, 0, 10, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private static void fullScrape() throws SQLException, IOException {
-		ArrayList<Game> games;
+		ArrayList<Game> games = scrape(3,12);
 		
 		// If there are games in the db, update them, or else insert them
 		if(areGames()){
-			games = scrape(3,12);
 			update(games);
 		} else {
-			games = scrape(3,12);
 			insert(games);
 		}
 	}
@@ -86,11 +90,12 @@ public class ScheduleScraper {
 		
 		java.sql.Connection conn = DriverManager.getConnection(props.getProperty("url"),props.getProperty("user"),
 				props.getProperty("password"));
-		System.out.println("Connection to database successful!");
+		System.out.println("Connected to database");
 		return conn;
 	}
 	
 	private static void updateScores(ArrayList<Game> games) throws SQLException, IOException {
+		System.out.println("Updating scores for " + games.size() + " games");
 		java.sql.Connection conn = getConnection();
 		PreparedStatement statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date, home_score FROM Game "
 				+ "JOIN Team home ON home_id = home.id "
@@ -127,9 +132,11 @@ public class ScheduleScraper {
 				}
 			}
 		}
+		System.out.println("Updated scores for " + games.size() + "games");
 	}
 	
 	private static void update(ArrayList<Game> games) throws SQLException, IOException {
+		System.out.println("Performing update for " + games.size() + " games");
 		java.sql.Connection conn = getConnection();
 		
 		PreparedStatement statement = null;
@@ -142,6 +149,7 @@ public class ScheduleScraper {
 		rs = statement.executeQuery();
 		ArrayList<Game> leftOverGames = new ArrayList<Game>();
 		
+		int count = 0;
 		while(rs.next()){
 			int id = rs.getInt("Game.id");
 			String homeTeam = rs.getString("home.name");
@@ -162,6 +170,7 @@ public class ScheduleScraper {
 				// Do a standard update
 				updateGame(conn, id, matchedGame);
 				games.remove(matchedGame);
+				count++;
 			} else {
 				// Add to left over pile to check later
 				leftOverGames.add(new Game(homeTeam, awayTeam, id));
@@ -190,16 +199,19 @@ public class ScheduleScraper {
 				
 				// Update the game in the database
 				updateGame(conn, id, game);
+				count++;
 				
 				System.out.println("---------");
 			}
 		}
+		
+		System.out.println("Updated " + count + " games in the database");
 			
 		conn.close();
 	}
 
 	private static void insertGame(java.sql.Connection conn, Game game) throws SQLException {
-		System.out.println("Inserting " + game + "\n");
+		System.out.println("Inserting " + game);
 		
 		// Get home team ID
 		int homeID = getTeamID(conn, game.getHomeTeam());
@@ -244,7 +256,6 @@ public class ScheduleScraper {
 	}
 
 	private static void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
-		System.out.println("Updating " + game + " at id: " + id + "\n");
 		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, week=?, home_score=?, away_score=?, tv=?, stadium=? "
 				+ "WHERE id=?");
 		statement.setLong(1, game.getDate().getTime());
@@ -267,6 +278,7 @@ public class ScheduleScraper {
 		for (Game game : games) {
 			insertGame(conn, game);
 		}
+		System.out.println("Inserted " + games.size() + " games in the database");
 		conn.close();
 	}
 

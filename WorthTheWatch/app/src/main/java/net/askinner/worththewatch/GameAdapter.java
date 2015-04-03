@@ -1,5 +1,6 @@
 package net.askinner.worththewatch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,12 +47,12 @@ public class GameAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder viewHolder;
+        final GameViewHolder viewHolder;
         if (convertView == null) { // no view to re-use, create new
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.game_item, parent, false);
 
-            viewHolder = new ViewHolder();
+            viewHolder = new GameViewHolder();
             viewHolder.dateText = (TextView)convertView.findViewById(R.id.date);
             viewHolder.timeText = (TextView)convertView.findViewById(R.id.time);
             viewHolder.scoreText = (TextView)convertView.findViewById(R.id.score);
@@ -62,11 +63,11 @@ public class GameAdapter extends BaseAdapter {
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder)convertView.getTag();
+            viewHolder = (GameViewHolder)convertView.getTag();
         }
 
         final Game game = gameList.getGames(week).get(position);
-        viewHolder.watchedCheck.setChecked(game.isChecked());
+        viewHolder.watchedCheck.setChecked(game.isChecked((Activity)context));
 
         viewHolder.dateText.setText(game.getFormattedDate());
         viewHolder.timeText.setText(game.getFormattedTime());
@@ -74,7 +75,7 @@ public class GameAdapter extends BaseAdapter {
         viewHolder.watchedCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                game.setChecked(viewHolder.watchedCheck.isChecked());
+                game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
 
                 if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
                     viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
@@ -104,6 +105,13 @@ public class GameAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public void checkAll(boolean b) {
+        for (Game g : gameList.getGames(week)){
+            g.setChecked(b,(Activity)context);
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -115,7 +123,7 @@ public class GameAdapter extends BaseAdapter {
     }
 }
 
-class ViewHolder {
+class GameViewHolder {
     TextView dateText;
     TextView timeText;
     TextView scoreText;

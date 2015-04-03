@@ -1,9 +1,12 @@
 package net.askinner.worththewatch;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -23,6 +26,37 @@ public class GameList{
         teamLogos = new HashMap<String,Bitmap>();
     }
 
+    public ArrayList<Game> getAllGames() {
+        ArrayList<Game> allGames = new ArrayList<Game>();
+        for (ArrayList<Game> weekGames : games){
+            for (Game game : weekGames){
+                allGames.add(game);
+            }
+        }
+        return allGames;
+    }
+
+    public ArrayList<Team> getTeams() {
+        return teams;
+    }
+
+    public int getCurrentWeek (){
+        Date date = new Date();
+
+        for (int i = 0; i < games.size(); i++) {
+            // If today is before the first game of the i week
+            // Get the previous week
+            if(date.before(games.get(i).get(0).getDate())){
+                if(i == 0) {
+                    return 0;
+                } else {
+                    return i - 1;
+                }
+            }
+        }
+        return games.size()-1;
+    }
+
     public int gamesInWeek(int week){
         return games.get(week).size();
     }
@@ -31,18 +65,12 @@ public class GameList{
         return games.size()-1;
     }
 
-    public void setChecked(int week, Boolean b){
+    public boolean areAllChecked (Activity activity, int week){
         for (Game game : games.get(week)){
-            game.setChecked(b);
+            if(!game.isChecked(activity)){
+                return false;
+            }
         }
-    }
-
-    public boolean hasLogo(String teamName){
-        return teamLogos.containsKey(teamName);
-    }
-
-    public boolean addTeamLogo(String teamName, Bitmap logo) {
-        teamLogos.put(teamName, logo);
         return true;
     }
 

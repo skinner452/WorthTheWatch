@@ -1,5 +1,7 @@
 package net.askinner.worththewatch;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -33,7 +35,6 @@ public class Game {
     private String[] channels;
     private int week;
     private double averageRating;
-    private boolean checked;
 
     public Game(String line) {
         String[] lineSplit = line.split(":");
@@ -78,15 +79,14 @@ public class Game {
         return String.format("%.2f",averageRating);
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void setChecked(boolean checked, Activity activity) {
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("checked",0);
+        sharedPreferences.edit().putBoolean(id + "", checked).commit();
     }
 
-    public String[] getChannels() {
-        return channels;
-    }
-
-    public boolean isChecked() {
+    public boolean isChecked(Activity activity) {
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("checked",0);
+        boolean checked = sharedPreferences.getBoolean(id + "", false);
         return checked;
     }
 

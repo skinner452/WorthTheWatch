@@ -1,6 +1,7 @@
 package net.askinner.worththewatch;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -62,9 +64,15 @@ public class AverageRatingActivity extends ActionBarActivity {
         submitReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(),RateGameActivity.class);
-                intent.putExtra("gameID",gameID);
-                startActivity(intent);
+                // Check to see if they have already rated the game before
+                SharedPreferences sharedPreferences = getSharedPreferences("rated",0);
+                if(!sharedPreferences.getBoolean("" + gameID, false)){
+                    Intent intent = new Intent(v.getContext(),RateGameActivity.class);
+                    intent.putExtra("gameID",gameID);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), "You have already rated this game", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

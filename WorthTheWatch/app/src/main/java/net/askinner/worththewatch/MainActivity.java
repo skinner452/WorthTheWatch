@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        mTitle = "Worth the Watch";
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -66,10 +66,7 @@ public class MainActivity extends ActionBarActivity
                 mTitle = "Matches";
                 break;
             case 2:
-                mTitle = "Your Table";
-                break;
-            case 3:
-                mTitle = "Settings";
+                mTitle = "My Table";
                 break;
         }
     }

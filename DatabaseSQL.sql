@@ -53,10 +53,15 @@ JOIN Game ON game_id = Game.id
 JOIN Team home ON home_id = home.id
 JOIN Team away ON away_id = away.id;
 
+SELECT device_id, COUNT(device_id) FROM Rating
+GROUP BY device_id;
+
 SELECT Game.id, home.name, away.name, date FROM Game
 JOIN Team home ON home_id = home.id
 JOIN Team away ON away_id = away.id
 ORDER BY date ASC;
+
+DELETE FROM Game WHERE ID = 54;
 
 SELECT device_id,game_id FROM Rating WHERE device_id = 'e7e16360e292f03b' AND game_id = 28;
 

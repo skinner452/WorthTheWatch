@@ -1,5 +1,6 @@
 package net.askinner.worththewatch;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
@@ -25,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.prefs.PreferencesFactory;
 
 
 public class RateGameActivity extends ActionBarActivity {
@@ -89,13 +91,18 @@ public class RateGameActivity extends ActionBarActivity {
                     try{
                         boolean success = new PostReview().execute("" + gameID, "" + rating, deviceID, chars).get();
                         if(success){
-                            Toast.makeText(getApplicationContext(),"Thanks for your rating!",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(),"Thanks for your rating!",Toast.LENGTH_SHORT).show();
+
+                            // Save that the user has already rated this game
+                            SharedPreferences sharedPreferences = getSharedPreferences("rated",0);
+                            sharedPreferences.edit().putBoolean(gameID + "", true).commit();
+
                             onBackPressed();
                         } else {
-                            Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e){
-                        Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_SHORT).show();
                     }
 
                 }

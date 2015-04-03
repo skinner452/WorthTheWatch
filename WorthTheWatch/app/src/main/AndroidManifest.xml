@@ -2,7 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.askinner.worththewatch" >
 
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
 
     <application
         android:allowBackup="true"
@@ -19,10 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RatingActivity"
-            android:label="@string/title_activity_rating" >
-        </activity>
-        <activity
             android:name=".RateGameActivity"
             android:label="@string/title_activity_rate_game" >
         </activity>
@@ -34,6 +38,10 @@
             android:name=".AverageRatingActivity"
             android:label="@string/title_activity_average_rating" >
         </activity>
+
+
+        <activity android:name="com.amazon.device.ads.AdActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
+
     </application>
 
 </manifest>

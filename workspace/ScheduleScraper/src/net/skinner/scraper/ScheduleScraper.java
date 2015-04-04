@@ -44,7 +44,8 @@ public class ScheduleScraper {
 						} else {
 							scoreScrape();
 							
-							if(counter.getCount() == 12){
+							// Once a day
+							if(counter.getCount() == 288){
 								counter.set(0);
 							}
 						}
@@ -58,7 +59,7 @@ public class ScheduleScraper {
 					System.out.println("-----------------");
 					System.out.println();
 				}
-			}, 0, 10, TimeUnit.MINUTES);
+			}, 0, 5, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -132,7 +133,8 @@ public class ScheduleScraper {
 				}
 			}
 		}
-		System.out.println("Updated scores for " + games.size() + "games");
+		conn.close();
+		System.out.println("Updated scores for " + games.size() + " games");
 	}
 	
 	private static void update(ArrayList<Game> games) throws SQLException, IOException {

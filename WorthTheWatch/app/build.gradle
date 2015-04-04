@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "net.askinner.worththewatch"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -20,8 +20,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/amazon-ads-5.5.102.jar')
+    compile 'com.google.android.gms:play-services:7.0.0'
 }

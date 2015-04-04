@@ -12,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.amazon.device.ads.AdLayout;
+import com.amazon.device.ads.AdRegistration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +71,10 @@ public class YourTableFragment extends Fragment {
 
             }
         });
+
+        AdLayout adView = (AdLayout)view.findViewById(R.id.adview);
+        AdRegistration.setAppKey("3a68fe4f04bb43c49f84f45279dc302c");
+        adView.loadAd();
 
         return view;
     }

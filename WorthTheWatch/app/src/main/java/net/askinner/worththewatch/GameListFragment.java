@@ -20,6 +20,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.amazon.device.ads.AdLayout;
+import com.amazon.device.ads.AdRegistration;
+import com.amazon.device.ads.AdTargetingOptions;
+import com.amazon.device.ads.DefaultAdListener;
+
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
@@ -46,6 +51,7 @@ public class GameListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_game_list, container, false);
 
         try{
@@ -150,6 +156,10 @@ public class GameListFragment extends Fragment {
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        AdLayout adView = (AdLayout)view.findViewById(R.id.adview);
+        AdRegistration.setAppKey("3a68fe4f04bb43c49f84f45279dc302c");
+        adView.loadAd();
 
         return view;
     }

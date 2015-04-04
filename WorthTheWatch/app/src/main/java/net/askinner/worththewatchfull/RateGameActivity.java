@@ -1,4 +1,4 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -6,12 +6,9 @@ import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -21,12 +18,10 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.prefs.PreferencesFactory;
 
 
 public class RateGameActivity extends ActionBarActivity {

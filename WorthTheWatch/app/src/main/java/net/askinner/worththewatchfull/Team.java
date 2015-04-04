@@ -1,21 +1,9 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-
-import java.io.InputStream;
-import java.io.Serializable;
 
 /**
  * Created by Alec on 3/26/2015.

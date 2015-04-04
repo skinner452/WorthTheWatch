@@ -1,19 +1,10 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 

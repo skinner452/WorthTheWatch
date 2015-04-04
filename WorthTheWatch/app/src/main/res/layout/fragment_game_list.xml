@@ -1,7 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:Amazon="http://schemas.android.com/apk/lib/com.amazon.device.ads"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="net.askinner.worththewatch.GameListFragment">
+    android:layout_height="match_parent" tools:context="net.askinner.worththewatchfull.GameListFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -15,8 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/nextButton"
-        android:layout_alignParentBottom="false"
-        android:layout_above="@+id/adview" />
+        android:layout_alignParentBottom="true" />
 
     <View
         android:layout_width="fill_parent"
@@ -77,14 +75,5 @@
         android:maxWidth="100dp"
         android:minHeight="40dp"
         android:minWidth="40dp" />
-
-    <com.amazon.device.ads.AdLayout
-        android:id="@+id/adview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true" />
 
 </RelativeLayout>

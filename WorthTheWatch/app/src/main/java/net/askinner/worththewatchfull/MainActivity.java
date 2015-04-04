@@ -1,4 +1,4 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-
-import com.amazon.device.ads.AdRegistration;
 
 
 public class MainActivity extends ActionBarActivity

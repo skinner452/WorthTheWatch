@@ -1,8 +1,6 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,35 +8,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amazon.device.ads.AdLayout;
 import com.amazon.device.ads.AdRegistration;
-import com.amazon.device.ads.AdTargetingOptions;
-import com.amazon.device.ads.DefaultAdListener;
-
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class GameListFragment extends Fragment {
     private int currentWeek;
@@ -156,10 +140,6 @@ public class GameListFragment extends Fragment {
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        AdLayout adView = (AdLayout)view.findViewById(R.id.adview);
-        AdRegistration.setAppKey("3a68fe4f04bb43c49f84f45279dc302c");
-        adView.loadAd();
 
         return view;
     }

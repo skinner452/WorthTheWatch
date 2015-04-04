@@ -1,12 +1,9 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 

@@ -1,7 +1,5 @@
-package net.askinner.worththewatch;
+package net.askinner.worththewatchfull;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import com.amazon.device.ads.AdLayout;
 import com.amazon.device.ads.AdRegistration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class YourTableFragment extends Fragment {
@@ -71,10 +68,6 @@ public class YourTableFragment extends Fragment {
 
             }
         });
-
-        AdLayout adView = (AdLayout)view.findViewById(R.id.adview);
-        AdRegistration.setAppKey("3a68fe4f04bb43c49f84f45279dc302c");
-        adView.loadAd();
 
         return view;
     }

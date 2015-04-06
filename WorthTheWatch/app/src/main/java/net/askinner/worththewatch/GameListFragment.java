@@ -24,7 +24,6 @@ import java.net.URL;
 
 public class GameListFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private int currentWeek;
     private int maxWeeks;
     private GameList gameList;
 
@@ -38,18 +37,16 @@ public class GameListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_game_list, container, false);
 
         try{
-            maxWeeks = gameList.getMaxWeeks();
 
-            // find the current week
-            currentWeek = gameList.getCurrentWeek();
 
             final ListView listview = (ListView) view.findViewById(R.id.gameList);
 
-            final TextView weekText = (TextView)view.findViewById(R.id.week);
-            weekText.setText("Week " + (currentWeek+1));
+            // Create initial adapter
+            GameAdapter adapter = new GameAdapter(getActivity(), gameList);
+            listview.setAdapter(adapter);
 
-//            GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
-//            listview.setAdapter(adapter);
+            final TextView weekText = (TextView)view.findViewById(R.id.week);
+            weekText.setText(gameList.weekString());
 
             final CheckBox checkAll = (CheckBox)view.findViewById(R.id.checkAll);
             checkAll.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +77,7 @@ public class GameListFragment extends Fragment {
                             checkAll.setChecked(false);
                         }
 
-                        weekText.setText("Week " + gameList.getCurrentWeek());
+                        weekText.setText(gameList.weekString());
                     }
                 }
             });
@@ -99,7 +96,7 @@ public class GameListFragment extends Fragment {
                             checkAll.setChecked(false);
                         }
 
-                        weekText.setText("Week " + gameList.getCurrentWeek());
+                        weekText.setText(gameList.weekString());
                     }
                 }
             });
@@ -115,7 +112,7 @@ public class GameListFragment extends Fragment {
                         intent = new Intent(getActivity(), PredictedRatingActivity.class);
                         intent.putExtra("homeAverage",game.getHomeTeam().getFormattedAverageRating());
                         intent.putExtra("awayAverage",game.getAwayTeam().getFormattedAverageRating());
-                        intent.putExtra("predicted",game.getPredictedRating());
+                        intent.putExtra("predicted",game.getPredictedRatingString());
                     }
 
                     intent.putExtra("gameID",game.getId());

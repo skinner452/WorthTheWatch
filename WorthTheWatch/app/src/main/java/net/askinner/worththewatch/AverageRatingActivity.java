@@ -124,7 +124,7 @@ class AverageRatingDetails extends AsyncTask<Integer,Void,String[]> {
             try{
                 averageRating = Double.parseDouble(line);
             } catch (Exception e){
-                averageRating = 0.0;
+                averageRating = 5.0;
             }
 
             output[0] = String.format("%.2f",averageRating);

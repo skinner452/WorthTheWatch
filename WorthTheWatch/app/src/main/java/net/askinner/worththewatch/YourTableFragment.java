@@ -27,7 +27,7 @@ public class YourTableFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_your_table, container, false);
 
-        Table table = new Table(getActivity(), gameList);
+        Table table = gameList.getTable(getActivity());
 
         final ListView listView = (ListView)view.findViewById(R.id.listView);
         listView.setAdapter(new TableAdapter(getActivity(), table.getTeams()));

@@ -55,19 +55,26 @@ public class Game {
 
     public String getRating() {
         if(isOver()){
-            return getAverageRating();
+            return getAverageRatingString();
         } else {
-            return "-" + getPredictedRating() + "-";
+            return "(" + getPredictedRatingString() + ")";
         }
     }
 
-    public String getPredictedRating() {
+    public String getPredictedRatingString() {
         Double predicted = (homeTeam.getAverageRating() + awayTeam.getAverageRating())/2;
         return String.format("%.2f",predicted);
     }
 
-    public String getAverageRating() {
+    public String getAverageRatingString() {
+        if(averageRating == 0.0){
+            return "5.00";
+        }
         return String.format("%.2f",averageRating);
+    }
+
+    public double getAverageRating() {
+        return averageRating;
     }
 
     public void setChecked(boolean checked, Activity activity) {

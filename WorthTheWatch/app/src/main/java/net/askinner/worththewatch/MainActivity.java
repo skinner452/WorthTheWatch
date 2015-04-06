@@ -29,6 +29,9 @@ public class MainActivity extends ActionBarActivity
 
     private GameList gameList;
 
+    private GameListFragment gameListFragment;
+    private YourTableFragment tableFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +46,8 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-
+        gameListFragment = null;
+        tableFragment = null;
 
 
     }
@@ -63,13 +67,19 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position){
             case 0:
+                if(gameListFragment == null){
+                    gameListFragment = GameListFragment.newInstance(1,gameList);
+                }
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, GameListFragment.newInstance(1, gameList))
+                        .replace(R.id.container,gameListFragment)
                         .commit();
                 break;
             case 1:
+                if(tableFragment == null){
+                    tableFragment = YourTableFragment.newInstance(2,gameList);
+                }
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, YourTableFragment.newInstance(2, gameList))
+                        .replace(R.id.container, tableFragment)
                         .commit();
                 break;
         }

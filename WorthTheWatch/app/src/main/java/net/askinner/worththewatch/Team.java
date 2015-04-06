@@ -101,10 +101,16 @@ public class Team{
     }
 
     public void addRating(Double rating){
+
         if(rating > 0){
             numRatings++;
             totalRating += rating;
             averageRating = totalRating/numRatings;
+
+            if(name.equals("Sporting KC")){
+                System.out.println("Adding " + rating);
+                System.out.println("Rating now " + averageRating);
+            }
         }
     }
 

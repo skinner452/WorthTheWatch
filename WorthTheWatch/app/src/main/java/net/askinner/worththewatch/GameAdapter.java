@@ -57,6 +57,8 @@ public class GameAdapter extends BaseAdapter {
         viewHolder.watchedCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gameList.setHasChanged(true);
+
                 game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
 
                 if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {

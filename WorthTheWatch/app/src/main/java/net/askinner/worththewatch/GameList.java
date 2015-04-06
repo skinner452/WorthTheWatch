@@ -13,17 +13,36 @@ import java.util.HashMap;
 public class GameList{
     private ArrayList<ArrayList<Game>> games; // Arraylist of weeks which contain an arraylist of games
     private ArrayList<Team> teams;
-    private ArrayList<Boolean> checked;
-    private HashMap<String,Bitmap> teamLogos;
     private int currentWeek;
+    private boolean gotWeek;
+    private boolean hasChanged;
+    private Table table;
 
     public GameList() {
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
-        checked = new ArrayList<Boolean>();
-        teamLogos = new HashMap<String,Bitmap>();
+        table = null;
+    }
 
-        currentWeek = -1;
+    public void setHasChanged(boolean hasChanged) {
+        this.hasChanged = hasChanged;
+    }
+
+    public Table getTable(Activity activity) {
+        if(table == null || hasChanged){
+            table = new Table(activity, this);
+        }
+        return table;
+    }
+
+    // If the GameListFragment is getting games for the first time,
+    // we want this method to get the current week
+    public ArrayList<Game> getGames (){
+        if(!gotWeek){
+            currentWeek = getStartWeek();
+            gotWeek = true;
+        }
+        return games.get(currentWeek);
     }
 
     public boolean nextWeek() {
@@ -56,12 +75,8 @@ public class GameList{
         return teams;
     }
 
-    public int getCurrentWeek() {
-        if(currentWeek == -1){
-            currentWeek = getStartWeek();
-            return currentWeek;
-        }
-        return currentWeek;
+    public String weekString() {
+        return "Week " + (currentWeek+1);
     }
 
     public int getStartWeek (){
@@ -79,10 +94,6 @@ public class GameList{
             }
         }
         return games.size()-1;
-    }
-
-    public int gamesInWeek(int week){
-        return games.get(week).size();
     }
 
     public int getMaxWeeks () {
@@ -117,8 +128,8 @@ public class GameList{
         Team awayTeam = getTeam(g.getAwayTeamName());
 
         if(g.isOver()){
-            awayTeam.addRating(Double.parseDouble(g.getRating()));
-            homeTeam.addRating(Double.parseDouble(g.getRating()));
+            awayTeam.addRating(g.getAverageRating());
+            homeTeam.addRating(g.getAverageRating());
         }
 
         g.setHomeTeam(homeTeam);
@@ -133,9 +144,5 @@ public class GameList{
         }
 
 
-    }
-
-    public ArrayList<Game> getGames (){
-        return games.get(currentWeek);
     }
 }

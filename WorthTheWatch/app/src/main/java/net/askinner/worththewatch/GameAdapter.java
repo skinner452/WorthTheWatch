@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,18 +15,16 @@ import android.widget.TextView;
  */
 public class GameAdapter extends BaseAdapter {
     private GameList gameList;
-    private int week;
     private Context context;
 
-    public GameAdapter(Context context, GameList gameList, int week){
+    public GameAdapter(Context context, GameList gameList){
         this.gameList = gameList;
-        this.week = week;
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return gameList.gamesInWeek(week);
+        return gameList.getGames().size();
     }
 
     @Override
@@ -50,7 +48,7 @@ public class GameAdapter extends BaseAdapter {
             viewHolder = (GameViewHolder)convertView.getTag();
         }
 
-        final Game game = gameList.getGames(week).get(position);
+        final Game game = gameList.getGames().get(position);
         viewHolder.watchedCheck.setChecked(game.isChecked((Activity)context));
 
         viewHolder.dateText.setText(game.getFormattedDate());
@@ -90,7 +88,7 @@ public class GameAdapter extends BaseAdapter {
     }
 
     public void checkAll(boolean b) {
-        for (Game g : gameList.getGames(week)){
+        for (Game g : gameList.getGames()){
             g.setChecked(b,(Activity)context);
         }
         notifyDataSetChanged();
@@ -103,7 +101,7 @@ public class GameAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return gameList.getGames(week).get(position);
+        return gameList.getGames().get(position);
     }
 }
 

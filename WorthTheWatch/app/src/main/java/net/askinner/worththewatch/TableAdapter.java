@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.content.Context;
 import android.view.LayoutInflater;

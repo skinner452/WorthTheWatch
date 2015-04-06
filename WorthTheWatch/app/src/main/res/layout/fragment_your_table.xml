@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
-    android:layout_height="fill_parent" tools:context="net.askinner.worththewatchfull.YourTableFragment"
+    android:layout_height="fill_parent" tools:context="net.askinner.worththewatch.YourTableFragment"
     android:baselineAligned="false"
     android:orientation="vertical">
 

@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;

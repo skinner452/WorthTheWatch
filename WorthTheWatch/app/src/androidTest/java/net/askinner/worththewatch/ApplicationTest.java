@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

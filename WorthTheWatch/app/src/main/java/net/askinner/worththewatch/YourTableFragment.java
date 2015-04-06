@@ -1,5 +1,6 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,13 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import com.amazon.device.ads.AdLayout;
-import com.amazon.device.ads.AdRegistration;
-
 import java.util.ArrayList;
 
 
 public class YourTableFragment extends Fragment {
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private GameList gameList;
 
     public YourTableFragment() {
@@ -27,12 +26,6 @@ public class YourTableFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_your_table, container, false);
-
-        try{
-            gameList = new RetrieveGames().execute().get();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
 
         Table table = new Table(getActivity(), gameList);
 
@@ -72,4 +65,23 @@ public class YourTableFragment extends Fragment {
         return view;
     }
 
+    public void setGameList(GameList gameList) {
+        this.gameList = gameList;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).onSectionAttached(
+                getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
+    public static YourTableFragment newInstance(int sectionNumber, GameList gameList) {
+        YourTableFragment fragment = new YourTableFragment();
+        fragment.setGameList(gameList);
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
 }

@@ -1,5 +1,6 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,9 +15,6 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.amazon.device.ads.AdLayout;
-import com.amazon.device.ads.AdRegistration;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class GameListFragment extends Fragment {
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private int currentWeek;
     private int maxWeeks;
     private GameList gameList;
@@ -39,7 +38,6 @@ public class GameListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_game_list, container, false);
 
         try{
-            gameList = new RetrieveGames().execute().get();
             maxWeeks = gameList.getMaxWeeks();
 
             // find the current week
@@ -62,7 +60,7 @@ public class GameListFragment extends Fragment {
                 }
             });
 
-            if(gameList.areAllChecked(getActivity(), currentWeek)){
+            if(gameList.areAllChecked(getActivity())){
                 checkAll.setChecked(true);
             } else {
                 checkAll.setChecked(false);
@@ -72,19 +70,17 @@ public class GameListFragment extends Fragment {
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(currentWeek > 0){
-                        currentWeek--;
+                    if(gameList.backWeek()){
+                        GameAdapter adapter = new GameAdapter(getActivity(), gameList);
+                        listview.setAdapter(adapter);
 
-                        if(gameList.areAllChecked(getActivity(), currentWeek)){
+                        if(gameList.areAllChecked(getActivity())){
                             checkAll.setChecked(true);
                         } else {
                             checkAll.setChecked(false);
                         }
 
-                        GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
-                        listview.setAdapter(adapter);
-
-                        weekText.setText("Week " + (currentWeek+1));
+                        weekText.setText("Week " + gameList.getCurrentWeek());
                     }
                 }
             });
@@ -93,19 +89,17 @@ public class GameListFragment extends Fragment {
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (currentWeek < maxWeeks) {
-                        currentWeek++;
+                    if(gameList.nextWeek()){
+                        GameAdapter adapter = new GameAdapter(getActivity(), gameList);
+                        listview.setAdapter(adapter);
 
-                        if(gameList.areAllChecked(getActivity(), currentWeek)){
+                        if(gameList.areAllChecked(getActivity())){
                             checkAll.setChecked(true);
                         } else {
                             checkAll.setChecked(false);
                         }
 
-                        GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
-                        listview.setAdapter(adapter);
-
-                        weekText.setText("Week " + (currentWeek + 1));
+                        weekText.setText("Week " + gameList.getCurrentWeek());
                     }
                 }
             });
@@ -113,7 +107,7 @@ public class GameListFragment extends Fragment {
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Game game = gameList.getGames(currentWeek).get(position);
+                    Game game = gameList.getGames().get(position);
                     Intent intent;
                     if(game.isOver()){
                         intent = new Intent(getActivity(), AverageRatingActivity.class);
@@ -147,17 +141,31 @@ public class GameListFragment extends Fragment {
     @Override
     public void onResume() {
         // update list
-        try{
-            final ListView listview = (ListView) getView().findViewById(R.id.gameList);
-            gameList = new RetrieveGames().execute().get();
-            GameAdapter adapter = new GameAdapter(getActivity(), gameList, currentWeek);
-            listview.setAdapter(adapter);
-        } catch (Exception e){
-            // leave it how it was
-        }
 
         super.onResume();
     }
+
+    public void setGameList(GameList gameList) {
+        this.gameList = gameList;
+    }
+
+    public static GameListFragment newInstance(int sectionNumber, GameList gameList) {
+        GameListFragment fragment = new GameListFragment();
+        fragment.setGameList(gameList);
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).onSectionAttached(
+                getArguments().getInt(ARG_SECTION_NUMBER));
+    }
+
+
 }
 
 class RetrieveGames extends AsyncTask<Void,Void,GameList> {

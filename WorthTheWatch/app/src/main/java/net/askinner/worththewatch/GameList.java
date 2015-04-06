@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -15,12 +15,31 @@ public class GameList{
     private ArrayList<Team> teams;
     private ArrayList<Boolean> checked;
     private HashMap<String,Bitmap> teamLogos;
+    private int currentWeek;
 
     public GameList() {
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
         checked = new ArrayList<Boolean>();
         teamLogos = new HashMap<String,Bitmap>();
+
+        currentWeek = -1;
+    }
+
+    public boolean nextWeek() {
+        if(currentWeek < getMaxWeeks()){
+            currentWeek++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean backWeek() {
+        if(currentWeek > 0){
+            currentWeek--;
+            return true;
+        }
+        return false;
     }
 
     public ArrayList<Game> getAllGames() {
@@ -37,7 +56,15 @@ public class GameList{
         return teams;
     }
 
-    public int getCurrentWeek (){
+    public int getCurrentWeek() {
+        if(currentWeek == -1){
+            currentWeek = getStartWeek();
+            return currentWeek;
+        }
+        return currentWeek;
+    }
+
+    public int getStartWeek (){
         Date date = new Date();
 
         for (int i = 0; i < games.size(); i++) {
@@ -62,8 +89,8 @@ public class GameList{
         return games.size()-1;
     }
 
-    public boolean areAllChecked (Activity activity, int week){
-        for (Game game : games.get(week)){
+    public boolean areAllChecked (Activity activity){
+        for (Game game : games.get(currentWeek)){
             if(!game.isChecked(activity)){
                 return false;
             }
@@ -108,7 +135,7 @@ public class GameList{
 
     }
 
-    public ArrayList<Game> getGames (int week){
-        return games.get(week);
+    public ArrayList<Game> getGames (){
+        return games.get(currentWeek);
     }
 }

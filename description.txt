@@ -1,0 +1,31 @@
+Short:
+An app to provide users with spoiler-free match ratings of MLS matches
+
+Full:
+Have you ever wanted to watch the best matches of the week and want to avoid the worst without spoilers? This app will give you everything you need to do just that. With spoiler-free characteristics, you can get a breakdown of which matches were the best of the week and why without any scores given away. With this app, you can also look at the table that reflects only the games that you want, no matter what order you are watching the matches in.
+
+Matches
+- Shows a list of matches for each week with a rating
+- Matches that have been played will display an average rating
+- Matches that haven't been played will display a predicted rating
+- Check each match off that you have watched or will not watch
+- Check off entire weeks at once
+- After matches are checked off, they will display the score instead of the rating
+- When you tap a match, it will bring you to a window that will give you the break down of the rating
+
+Predicted Rating
+- Shows the average rating for each team's matches
+- Uses those averages to create a predicted rating
+
+Average Rating
+- Shows how many users voted for the match
+- Gives the top 3 characteristics selected by users
+- There is also a button to submit your own rating
+
+Rating a game
+- Select a number between 1-10 with a seek bar
+- Select the characteristics that are applicable
+
+My Table
+- Generates a table based off your check marks
+- Allows you to look at a table that prevents spoilers

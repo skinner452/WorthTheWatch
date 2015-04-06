@@ -1,4 +1,4 @@
-package net.askinner.worththewatchfull;
+package net.askinner.worththewatch;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +27,8 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private GameList gameList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,21 +42,34 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
+
+
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        // Generate the gameList if its null
+        if(gameList == null){
+            try{
+                gameList = new RetrieveGames().execute().get();
+            } catch (Exception e){
+
+            }
+        }
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position){
             case 0:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, new GameListFragment())
+                        .replace(R.id.container, GameListFragment.newInstance(1, gameList))
                         .commit();
                 break;
             case 1:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, new YourTableFragment())
+                        .replace(R.id.container, YourTableFragment.newInstance(2, gameList))
                         .commit();
                 break;
         }

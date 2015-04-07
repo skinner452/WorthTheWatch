@@ -1,11 +1,16 @@
 package net.askinner.worththewatch;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by Alec on 3/24/2015.
@@ -18,10 +23,16 @@ public class GameList{
     private boolean hasChanged;
     private Table table;
 
+
+
     public GameList() {
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
         table = null;
+    }
+
+    public void update() {
+        System.out.println("Updating gameList");
     }
 
     public void setHasChanged(boolean hasChanged) {
@@ -144,5 +155,35 @@ public class GameList{
         }
 
 
+    }
+}
+
+class RetrieveGames extends AsyncTask<Void,Void,GameList> {
+
+    @Override
+    protected GameList doInBackground(Void... params) {
+        System.out.println("Retrieving games");
+        GameList games = new GameList();
+        try {
+            URL url = new URL("http://askinner.net/wtw/games.php");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            String line;
+
+            while((line = in.readLine()) != null){
+                games.addLine(line);
+            }
+
+            in.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return games;
     }
 }

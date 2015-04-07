@@ -96,6 +96,11 @@ public class GameAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void update() {
+        System.out.println("GameAdapter update");
+        notifyDataSetChanged();
+    }
+
     @Override
     public long getItemId(int position) {
         return position;

@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
@@ -31,6 +30,7 @@ public class MainActivity extends ActionBarActivity
 
     private GameListFragment gameListFragment;
     private YourTableFragment tableFragment;
+    private int currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,22 +67,18 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position){
             case 0:
-                if(gameListFragment == null){
-                    gameListFragment = GameListFragment.newInstance(1,gameList);
-                }
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container,gameListFragment)
+                        .replace(R.id.container,GameListFragment.newInstance(1,gameList))
                         .commit();
                 break;
             case 1:
-                if(tableFragment == null){
-                    tableFragment = YourTableFragment.newInstance(2,gameList);
-                }
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, tableFragment)
+                        .replace(R.id.container, YourTableFragment.newInstance(2,gameList))
                         .commit();
                 break;
         }
+
+        currentFragment = position;
     }
 
     public void onSectionAttached(int number) {
@@ -115,16 +111,6 @@ public class MainActivity extends ActionBarActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**

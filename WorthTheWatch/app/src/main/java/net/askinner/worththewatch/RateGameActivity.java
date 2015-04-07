@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.SparseBooleanArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -90,9 +91,9 @@ public class RateGameActivity extends ActionBarActivity {
 
                             // Save that the user has already rated this game
                             SharedPreferences sharedPreferences = getSharedPreferences("rated",0);
-                            sharedPreferences.edit().putBoolean(gameID + "", true).commit();
+                            sharedPreferences.edit().putBoolean(gameID + "", true).apply();
 
-                            onBackPressed();
+                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_SHORT).show();
                         }
@@ -107,6 +108,14 @@ public class RateGameActivity extends ActionBarActivity {
         }
 
         setTitle("Rate Game");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+        return true;
     }
 }
 

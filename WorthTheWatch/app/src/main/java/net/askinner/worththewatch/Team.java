@@ -106,11 +106,6 @@ public class Team{
             numRatings++;
             totalRating += rating;
             averageRating = totalRating/numRatings;
-
-            if(name.equals("Sporting KC")){
-                System.out.println("Adding " + rating);
-                System.out.println("Rating now " + averageRating);
-            }
         }
     }
 

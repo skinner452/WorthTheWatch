@@ -94,6 +94,10 @@ public class TableAdapter extends BaseAdapter{
         notifyDataSetChanged();
     }
 
+    public void update() {
+        notifyDataSetChanged();
+    }
+
     @Override
     public Object getItem(int position) {
         return teams.get(position);

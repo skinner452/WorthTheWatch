@@ -69,6 +69,12 @@ public class YourTableFragment extends Fragment {
         this.gameList = gameList;
     }
 
+    public void update() {
+        ListView listview = (ListView) getView().findViewById(R.id.listView);
+        TableAdapter adapter = (TableAdapter)listview.getAdapter();
+        adapter.update();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);

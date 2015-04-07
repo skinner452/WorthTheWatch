@@ -79,7 +79,7 @@ public class Game {
 
     public void setChecked(boolean checked, Activity activity) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences("checked",0);
-        sharedPreferences.edit().putBoolean(id + "", checked).commit();
+        sharedPreferences.edit().putBoolean(id + "", checked).apply();
     }
 
     public boolean isChecked(Activity activity) {

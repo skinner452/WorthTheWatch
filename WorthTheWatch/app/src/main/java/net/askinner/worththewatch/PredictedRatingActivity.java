@@ -2,6 +2,7 @@ package net.askinner.worththewatch;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,5 +50,13 @@ public class PredictedRatingActivity extends ActionBarActivity {
         predicted.setText(getIntent().getStringExtra("predicted"));
 
         setTitle(homeTeam + " - " + awayTeam);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+        return true;
     }
 }

@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,7 +27,6 @@ import java.net.URL;
 
 public class GameListFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private int maxWeeks;
     private GameList gameList;
 
     public GameListFragment() {
@@ -132,12 +134,30 @@ public class GameListFragment extends Fragment {
             e.printStackTrace();
         }
 
+        setHasOptionsMenu(true);
+
         return view;
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_refresh){
+            gameList.update();
+            updateAdapter();
+            System.out.println("Refresh");
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void updateAdapter() {
+        ListView listview = (ListView) getView().findViewById(R.id.gameList);
+        GameAdapter adapter = (GameAdapter)listview.getAdapter();
+        adapter.update();
+    }
+
+    @Override
     public void onResume() {
-        // update list
+        // update list if changes
 
         super.onResume();
     }
@@ -161,35 +181,5 @@ public class GameListFragment extends Fragment {
         ((MainActivity) activity).onSectionAttached(
                 getArguments().getInt(ARG_SECTION_NUMBER));
     }
-
-
 }
 
-class RetrieveGames extends AsyncTask<Void,Void,GameList> {
-
-    @Override
-    protected GameList doInBackground(Void... params) {
-        GameList games = new GameList();
-        try {
-            URL url = new URL("http://askinner.net/wtw/games.php");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()));
-            String line;
-
-            while((line = in.readLine()) != null){
-                games.addLine(line);
-            }
-
-            in.close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return games;
-    }
-}

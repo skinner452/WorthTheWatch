@@ -28,15 +28,37 @@
         </activity>
         <activity
             android:name="net.askinner.worththewatch.RateGameActivity"
-            android:label="@string/title_activity_rate_game" >
+            android:label="@string/title_activity_rate_game"
+            android:parentActivityName="net.askinner.worththewatch.AverageRatingActivity" >
+
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.askinner.worththewatch.AverageRatingActivity" />
         </activity>
         <activity
             android:name="net.askinner.worththewatch.PredictedRatingActivity"
-            android:label="@string/title_activity_predicted_rating" >
+            android:label="@string/title_activity_predicted_rating"
+            android:parentActivityName="net.askinner.worththewatch.MainActivity" >
+
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.askinner.worththewatch.MainActivity" />
+
         </activity>
         <activity
             android:name="net.askinner.worththewatch.AverageRatingActivity"
-            android:label="@string/title_activity_average_rating" >
+            android:label="@string/title_activity_average_rating"
+            android:parentActivityName="net.askinner.worththewatch.MainActivity" >
+
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.askinner.worththewatch.MainActivity" />
         </activity>
 
     </application>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -61,7 +62,7 @@ public class YourTableFragment extends Fragment {
 
             }
         });
-
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -69,7 +70,16 @@ public class YourTableFragment extends Fragment {
         this.gameList = gameList;
     }
 
-    public void update() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_refresh){
+            updateAdapter();
+            System.out.println("Refresh");
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void updateAdapter() {
         ListView listview = (ListView) getView().findViewById(R.id.listView);
         TableAdapter adapter = (TableAdapter)listview.getAdapter();
         adapter.update();

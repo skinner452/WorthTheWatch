@@ -142,7 +142,6 @@ public class GameListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_refresh){
-            gameList.update();
             updateAdapter();
             System.out.println("Refresh");
         }

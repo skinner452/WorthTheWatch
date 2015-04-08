@@ -152,7 +152,7 @@ public class GameListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_refresh){
+        if(item.getItemId() == R.id.action_refresh && ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
             try{
                 new RetrieveGames(this, gameList).execute().get();
             } catch (Exception e) {

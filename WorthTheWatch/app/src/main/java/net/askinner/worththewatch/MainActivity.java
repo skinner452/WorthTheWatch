@@ -1,6 +1,7 @@
 package net.askinner.worththewatch;
 
 import android.app.Activity;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -8,9 +9,11 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity
@@ -30,7 +33,7 @@ public class MainActivity extends ActionBarActivity
 
     private GameListFragment gameListFragment;
     private YourTableFragment tableFragment;
-    private int currentFragment;
+    private boolean noConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +55,34 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        replaceFragment(position);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_refresh && noConnection){
+            replaceFragment(0);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void replaceFragment(int position){
         if(gameList == null){
             gameList = new GameList();
         }
 
+        if(gameList.isEmpty()){
+            if(!ConnectionCheck.hasConnection(getApplicationContext())){
+                noConnection = true;
+                return;
+            } else {
+                noConnection = false;
+            }
+        }
+
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+
         switch (position){
             case 0:
                 fragmentManager.beginTransaction()
@@ -70,8 +95,6 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
         }
-
-        currentFragment = position;
     }
 
     public void onSectionAttached(int number) {

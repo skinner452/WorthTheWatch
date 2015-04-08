@@ -48,19 +48,12 @@ public class MainActivity extends ActionBarActivity
 
         gameListFragment = null;
         tableFragment = null;
-
-
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // Generate the gameList if its null
         if(gameList == null){
-            try{
-                gameList = new RetrieveGames().execute().get();
-            } catch (Exception e){
-
-            }
+            gameList = new GameList();
         }
 
         // update the main content by replacing fragments

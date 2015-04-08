@@ -13,6 +13,7 @@ public class Table implements Comparator<Team>{
     ArrayList<Team> teams;
 
     public Table(Activity activity, GameList gameList){
+        System.out.println("Creating new table");
         ArrayList<Game> games = gameList.getAllGames();
         teams = gameList.getTeams();
 

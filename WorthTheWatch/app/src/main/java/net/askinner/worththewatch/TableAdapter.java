@@ -94,7 +94,10 @@ public class TableAdapter extends BaseAdapter{
         notifyDataSetChanged();
     }
 
-    public void update() {
+    public void update(Table table) {
+        System.out.println("Updating TableAdapter");
+        allTeams = table.getTeams();
+        setDivision(currentDivision);
         notifyDataSetChanged();
     }
 

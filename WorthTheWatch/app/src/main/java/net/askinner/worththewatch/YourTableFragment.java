@@ -70,19 +70,27 @@ public class YourTableFragment extends Fragment {
         this.gameList = gameList;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_refresh){
-            updateAdapter();
+            try{
+                new RetrieveGames(this, gameList).execute().get();
+            } catch (Exception e){
+
+            }
             System.out.println("Refresh");
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void updateAdapter() {
+        System.out.println("Updating table fragment");
         ListView listview = (ListView) getView().findViewById(R.id.listView);
         TableAdapter adapter = (TableAdapter)listview.getAdapter();
-        adapter.update();
+        Table table = gameList.getTable(getActivity());
+        adapter.update(table);
     }
 
     @Override

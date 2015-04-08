@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -28,18 +29,15 @@ import java.net.URL;
 public class GameListFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private GameList gameList;
+    private boolean init;
 
     public GameListFragment() {
         // Required empty public constructor
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_game_list, container, false);
-
+    private void initializeView(View view) {
         try{
-
+            view.findViewById(R.id.loadingText).setVisibility(View.INVISIBLE);
 
             final ListView listview = (ListView) view.findViewById(R.id.gameList);
 
@@ -134,6 +132,19 @@ public class GameListFragment extends Fragment {
             e.printStackTrace();
         }
 
+        init = true;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_game_list, container, false);
+
+        if(gameList.isEmpty()){
+            new RetrieveGames(this, gameList).execute();
+        } else {
+            initializeView(view);
+        }
+
         setHasOptionsMenu(true);
 
         return view;
@@ -142,16 +153,24 @@ public class GameListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_refresh){
-            updateAdapter();
+            try{
+                new RetrieveGames(this, gameList).execute().get();
+            } catch (Exception e) {
+
+            }
             System.out.println("Refresh");
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void updateAdapter() {
-        ListView listview = (ListView) getView().findViewById(R.id.gameList);
-        GameAdapter adapter = (GameAdapter)listview.getAdapter();
-        adapter.update();
+        if(!init){
+            initializeView(getView());
+        } else {
+            ListView listview = (ListView) getView().findViewById(R.id.gameList);
+            GameAdapter adapter = (GameAdapter)listview.getAdapter();
+            adapter.update();
+        }
     }
 
     @Override

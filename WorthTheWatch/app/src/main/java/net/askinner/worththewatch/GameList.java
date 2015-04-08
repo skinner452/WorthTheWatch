@@ -2,6 +2,7 @@ package net.askinner.worththewatch;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +30,14 @@ public class GameList{
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
         table = null;
+    }
+
+    public void clear() {
+        games.clear();
+    }
+
+    public boolean isEmpty() {
+        return games.isEmpty();
     }
 
     public void update() {
@@ -159,11 +168,20 @@ public class GameList{
 }
 
 class RetrieveGames extends AsyncTask<Void,Void,GameList> {
+    private Fragment fragment;
+    private GameList gameList;
+
+    public RetrieveGames(Fragment fragment, GameList gameList){
+        this.fragment = fragment;
+        this.gameList = gameList;
+        if(!gameList.isEmpty()){
+            gameList.clear();
+        }
+    }
 
     @Override
     protected GameList doInBackground(Void... params) {
         System.out.println("Retrieving games");
-        GameList games = new GameList();
         try {
             URL url = new URL("http://askinner.net/wtw/games.php");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -175,7 +193,7 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
             String line;
 
             while((line = in.readLine()) != null){
-                games.addLine(line);
+                gameList.addLine(line);
             }
 
             in.close();
@@ -184,6 +202,17 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return games;
+        return gameList;
+    }
+
+    @Override
+    protected void onPostExecute(GameList gameList) {
+        if(fragment instanceof GameListFragment){
+            ((GameListFragment) fragment).updateAdapter();
+        }
+
+        if(fragment instanceof  YourTableFragment){
+            ((YourTableFragment) fragment).updateAdapter();
+        }
     }
 }

@@ -109,6 +109,16 @@ public class Team{
         }
     }
 
+    public void clearResults() {
+        wins = 0;
+        draws = 0;
+        losses = 0;
+        homeGoalsFor = 0;
+        homeGoalsAgainst = 0;
+        awayGoalsFor = 0;
+        awayGoalsAgainst = 0;
+    }
+
     public String getName() {
         return name;
     }

@@ -3,6 +3,7 @@ package net.askinner.worththewatch;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +31,12 @@ public class GameList{
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
         table = null;
+    }
+
+    public void resetTeams() {
+        for (Team team : teams){
+            team.clearResults();
+        }
     }
 
     public void clear() {
@@ -180,6 +187,17 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
     }
 
     @Override
+    protected void onPreExecute() {
+        if(fragment instanceof GameListFragment){
+            ((GameListFragment) fragment).setViewComponents(false);
+        }
+
+        if(fragment instanceof YourTableFragment){
+            ((YourTableFragment) fragment).setViewComponents(false);
+        }
+    }
+
+    @Override
     protected GameList doInBackground(Void... params) {
         System.out.println("Retrieving games");
         try {
@@ -198,8 +216,10 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
 
             in.close();
         } catch (MalformedURLException e) {
+            Toast.makeText(fragment.getActivity().getApplicationContext(), "No connection, try again", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         } catch (IOException e) {
+            Toast.makeText(fragment.getActivity().getApplicationContext(), "No connection, try again", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
         return gameList;
@@ -208,10 +228,12 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
     @Override
     protected void onPostExecute(GameList gameList) {
         if(fragment instanceof GameListFragment){
+            ((GameListFragment) fragment).setViewComponents(true);
             ((GameListFragment) fragment).updateAdapter();
         }
 
         if(fragment instanceof  YourTableFragment){
+            ((YourTableFragment) fragment).setViewComponents(true);
             ((YourTableFragment) fragment).updateAdapter();
         }
     }

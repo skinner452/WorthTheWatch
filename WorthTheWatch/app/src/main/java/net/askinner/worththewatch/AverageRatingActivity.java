@@ -65,12 +65,24 @@ public class AverageRatingActivity extends ActionBarActivity {
                 if(!sharedPreferences.getBoolean("" + gameID, false)){
                     Intent intent = new Intent(v.getContext(),RateGameActivity.class);
                     intent.putExtra("gameID",gameID);
-                    startActivity(intent);
+                    startActivityForResult(intent, GameListFragment.NEEDS_UPDATE);
                 } else {
                     Toast.makeText(getApplicationContext(), "You have already rated this game", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        setDetails();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == GameListFragment.NEEDS_UPDATE){
+            if(resultCode == 1){
+                setDetails();
+                setResult(1);
+            }
+        }
     }
 
     @Override
@@ -82,8 +94,11 @@ public class AverageRatingActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume() {
-        // update the numbers
+    public void onBackPressed() {
+        finish();
+    }
+
+    private void setDetails() {
         final int gameID = getIntent().getIntExtra("gameID",0);
 
         TextView averageRating = (TextView)findViewById(R.id.averageRating);
@@ -107,8 +122,6 @@ public class AverageRatingActivity extends ActionBarActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        super.onResume();
     }
 }
 

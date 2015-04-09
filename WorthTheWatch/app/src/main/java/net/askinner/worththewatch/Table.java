@@ -15,6 +15,9 @@ public class Table implements Comparator<Team>{
     public Table(Activity activity, GameList gameList){
         System.out.println("Creating new table");
         ArrayList<Game> games = gameList.getAllGames();
+
+        // Reset the teams so that the results do not accumulate after every refresh
+        gameList.resetTeams();
         teams = gameList.getTeams();
 
         for (Game game : games){

@@ -54,6 +54,13 @@ public class Game {
 	public Integer getAwayScore() {
 		return awayScore;
 	}
+	
+	public boolean hasScore() {
+		if(homeScore != null){
+			return true;
+		}
+		return false;
+	}
 
 	public Date getDate() {
 		return date;
@@ -76,7 +83,7 @@ public class Game {
 	
 	@Override
 	public String toString() {
-		return date + ": " + homeTeam + " - " + awayTeam;
+		return date + ": " + homeTeam + " - " + awayTeam + " " + homeScore + " - " + awayScore;
 	}
 
 	

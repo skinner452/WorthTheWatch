@@ -70,13 +70,20 @@ public class YourTableFragment extends Fragment {
         this.gameList = gameList;
     }
 
+    public void setViewComponents(boolean b) {
+        try{
+            getView().findViewById(R.id.listView).setEnabled(b);
+            getView().findViewById(R.id.spinner).setEnabled(b);
+        } catch (Exception e){
 
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_refresh && ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
+        if(item.getItemId() == R.id.action_refresh){
             try{
-                new RetrieveGames(this, gameList).execute().get();
+                new RetrieveGames(this, gameList).execute();
             } catch (Exception e){
 
             }

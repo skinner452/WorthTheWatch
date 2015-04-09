@@ -56,7 +56,7 @@ JOIN Team away ON away_id = away.id;
 SELECT device_id, COUNT(device_id) FROM Rating
 GROUP BY device_id;
 
-SELECT Game.id, home.name, away.name, date FROM Game
+SELECT * FROM Game
 JOIN Team home ON home_id = home.id
 JOIN Team away ON away_id = away.id
 ORDER BY date ASC;

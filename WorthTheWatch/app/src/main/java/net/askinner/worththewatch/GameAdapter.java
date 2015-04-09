@@ -30,6 +30,7 @@ public class GameAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final GameViewHolder viewHolder;
+
         if (convertView == null) { // no view to re-use, create new
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.game_item, parent, false);
@@ -57,14 +58,18 @@ public class GameAdapter extends BaseAdapter {
         viewHolder.watchedCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameList.setHasChanged(true);
+                try{
+                    gameList.setHasChanged(true);
 
-                game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
+                    game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
 
-                if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
-                    viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-                } else {
-                    viewHolder.scoreText.setText(game.getRating());
+                    if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
+                        viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
+                    } else {
+                        viewHolder.scoreText.setText(game.getRating());
+                    }
+                } catch (Exception e){
+
                 }
             }
         });

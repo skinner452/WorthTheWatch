@@ -1,5 +1,6 @@
 package net.askinner.worththewatch;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.provider.Settings;
@@ -38,7 +39,7 @@ public class RateGameActivity extends ActionBarActivity {
         Button submitButton = (Button)findViewById(R.id.submitButton);
 
         try{
-            final ArrayList<String> charListArray = new RetrieveChars().execute().get();
+            final ArrayList<String> charListArray = new RetrieveChars(getApplicationContext()).execute().get();
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_checked,charListArray);
             charList.setAdapter(adapter);
 
@@ -85,7 +86,7 @@ public class RateGameActivity extends ActionBarActivity {
 
                     int rating = Integer.parseInt(ratingNum.getText() + "");
                     try{
-                        boolean success = new PostReview().execute("" + gameID, "" + rating, deviceID, chars).get();
+                        boolean success = new PostReview(getApplicationContext()).execute("" + gameID, "" + rating, deviceID, chars).get();
                         if(success){
                             Toast.makeText(getApplicationContext(),"Thanks for your rating!",Toast.LENGTH_SHORT).show();
 
@@ -93,6 +94,7 @@ public class RateGameActivity extends ActionBarActivity {
                             SharedPreferences sharedPreferences = getSharedPreferences("rated",0);
                             sharedPreferences.edit().putBoolean(gameID + "", true).apply();
 
+                            setResult(1);
                             finish();
                         } else {
                             Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_SHORT).show();
@@ -100,7 +102,6 @@ public class RateGameActivity extends ActionBarActivity {
                     } catch (Exception e){
                         Toast.makeText(getApplicationContext(),"There was a problem posting your rating",Toast.LENGTH_SHORT).show();
                     }
-
                 }
             });
         } catch (Exception e){
@@ -117,9 +118,18 @@ public class RateGameActivity extends ActionBarActivity {
         }
         return true;
     }
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
 }
 
 class RetrieveChars extends AsyncTask<Void,Void,ArrayList<String>> {
+    private Context context;
+    public RetrieveChars(Context context){
+        this.context = context;
+    }
 
     @Override
     protected ArrayList<String> doInBackground(Void... params) {
@@ -141,14 +151,20 @@ class RetrieveChars extends AsyncTask<Void,Void,ArrayList<String>> {
             in.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
         }
         return chars;
     }
 }
 
 class PostReview extends AsyncTask<String,Void,Boolean> {
+    private Context context;
+    public PostReview(Context context){
+        this.context = context;
+    }
 
     @Override
     protected Boolean doInBackground(String... params) {
@@ -179,15 +195,14 @@ class PostReview extends AsyncTask<String,Void,Boolean> {
 
             if(output.equals("success")){
                 return true;
-            } else {
-                return false;
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return false;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
+
+        Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
+        return false;
     }
 }

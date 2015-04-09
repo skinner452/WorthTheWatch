@@ -25,7 +25,7 @@ public class ConnectionCheck {
                 return false;
             }
         }
-        Toast.makeText(context, "No connection, try to refresh", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
         return false;
     }
 }

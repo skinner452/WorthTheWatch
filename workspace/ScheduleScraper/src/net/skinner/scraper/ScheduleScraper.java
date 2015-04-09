@@ -30,59 +30,147 @@ import org.jsoup.select.Elements;
 public class ScheduleScraper {
 	public static void main(String[] args) {
 		try {
-			final Counter counter = new Counter();
+			final ScheduleScraper s = new ScheduleScraper();
 			ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 			executorService.scheduleAtFixedRate(new Runnable() {
 				
 				public void run() {
-					System.out.println();
-					System.out.println("-----------------");
-					System.out.println("Started at: " + new Date());
-					try {
-						if(counter.getCount() == 0){
-							fullScrape();
-						} else {
-							scoreScrape();
-							
-							// Once a day
-							if(counter.getCount() == 288){
-								counter.set(0);
-							}
-						}
-						counter.add();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					System.out.println("Finished at: " + new Date());
-					System.out.println("-----------------");
-					System.out.println();
+					s.scrape();
 				}
-			}, 0, 5, TimeUnit.MINUTES);
+			}, 0, 1, TimeUnit.MINUTES);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void fullScrape() throws SQLException, IOException {
-		ArrayList<Game> games = scrape(3,12);
+	private int nextUpdate; // in minutes
+	private int nextFullScrape; // in minutes
+	private ArrayList<Game> games;
+	private boolean notFirstRun;
+	
+	public void scrape(){
+		boolean scraped = true;
 		
-		// If there are games in the db, update them, or else insert them
-		if(areGames()){
-			update(games);
+		if(nextUpdate <= 0 && notFirstRun){
+			System.out.println();
+			System.out.println("-----------------");
+			System.out.println("Score scrape started at: " + new Date());
+			try {
+				scoreScrape();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println("Finished at: " + new Date());
+			System.out.println("-----------------");
+			
+			nextFullScrape--;
+		} else if(nextFullScrape <= 0){
+			System.out.println();
+			System.out.println("-----------------");
+			System.out.println("Full scrape started at: " + new Date());
+			try {
+				fullScrape();
+				nextFullScrape = 60*24; // 1 day
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println("Finished at: " + new Date());
+			System.out.println("-----------------");
+			
+			nextUpdate--;
 		} else {
-			insert(games);
+			nextUpdate--;
+			nextFullScrape--;
+			scraped = false;
 		}
-	}
+		
+		if(!notFirstRun){
+			notFirstRun = true;
+		}
+		
+		if(scraped){
+			// Find next time to update score
+			Calendar currentTime = Calendar.getInstance();
+			
+			
+			// This should set the update time to 1 min if there is a game
+			for (Game game : games) {
+				if(!game.hasScore()){
+					Calendar endTime = Calendar.getInstance();
+					endTime.setTime(game.getDate());
+					endTime.add(Calendar.HOUR, 1);
+					endTime.add(Calendar.MINUTE, 50);
+					
+					if(endTime.before(currentTime)){
+						System.out.println("Waiting for score on " + game);
+						nextUpdate = 1;
+						return;
+					}
+				}
+			}
+			
+			// Calculate time until next game end
+			Date nextGame = null;
+			for (Game game : games) {
+				if(!game.hasScore()){
+					if(nextGame == null || game.getDate().before(nextGame)){
+						nextGame = game.getDate();
+					}
+				}
+			}
+			
+			currentTime = Calendar.getInstance();
+			Calendar nextGameTime = Calendar.getInstance();
+			nextGameTime.setTime(nextGame);
+			nextGameTime.add(Calendar.HOUR, 1);
+			nextGameTime.add(Calendar.MINUTE, 50);
+			long nextUpdateInMili = nextGameTime.getTimeInMillis() - currentTime.getTimeInMillis();
+			nextUpdate = (int)(nextUpdateInMili / 60000);
+		}
 
-	private static void scoreScrape() throws SQLException, IOException {
-		int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
-		ArrayList<Game> games = scrape(m,m);
-		updateScores(games);
+		System.out.println("Next update: " + nextUpdate + " minutes");
+		System.out.println("Next full scrape: " + nextFullScrape + " minutes");
+		System.out.println();
 	}
 	
-	private static java.sql.Connection getConnection() throws SQLException, IOException {
+	private ArrayList<Game> createCopy(){
+		ArrayList<Game> gamesCopy = new ArrayList<Game>();
+		for (Game game : games) {
+			gamesCopy.add(game);
+		}
+		return gamesCopy;
+	}
+	
+	private void fullScrape() throws SQLException, IOException {
+		scrape(3,12);
+		
+		ArrayList<Game> gamesCopy = createCopy();
+		
+		System.out.println("Games size: " + games.size());
+		// If there are games in the db, update them, or else insert them
+		if(areGames()){
+			update();
+		} else {
+			insert();
+		}
+		
+		games = gamesCopy;
+	}
+
+	private void scoreScrape() throws SQLException, IOException {
+		int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
+		scrape(m,m);
+		
+		ArrayList<Game> gamesCopy = createCopy();
+		updateScores();
+		games = gamesCopy;
+	}
+	
+	private java.sql.Connection getConnection() throws SQLException, IOException {
 		Properties props = new Properties();
 		String propName = "dbInfo.properties";
 		InputStream in = new FileInputStream(propName);
@@ -95,7 +183,7 @@ public class ScheduleScraper {
 		return conn;
 	}
 	
-	private static void updateScores(ArrayList<Game> games) throws SQLException, IOException {
+	private void updateScores() throws SQLException, IOException {
 		System.out.println("Updating scores for " + games.size() + " games");
 		java.sql.Connection conn = getConnection();
 		PreparedStatement statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date, home_score FROM Game "
@@ -137,7 +225,7 @@ public class ScheduleScraper {
 		System.out.println("Updated scores for " + games.size() + " games");
 	}
 	
-	private static void update(ArrayList<Game> games) throws SQLException, IOException {
+	private void update() throws SQLException, IOException {
 		System.out.println("Performing update for " + games.size() + " games");
 		java.sql.Connection conn = getConnection();
 		
@@ -171,8 +259,8 @@ public class ScheduleScraper {
 			if(match){
 				// Do a standard update
 				updateGame(conn, id, matchedGame);
-				games.remove(matchedGame);
 				count++;
+				games.remove(matchedGame);
 			} else {
 				// Add to left over pile to check later
 				leftOverGames.add(new Game(homeTeam, awayTeam, id));
@@ -212,7 +300,7 @@ public class ScheduleScraper {
 		conn.close();
 	}
 
-	private static void insertGame(java.sql.Connection conn, Game game) throws SQLException {
+	private void insertGame(java.sql.Connection conn, Game game) throws SQLException {
 		System.out.println("Inserting " + game);
 		
 		// Get home team ID
@@ -241,7 +329,7 @@ public class ScheduleScraper {
 
 	// Gets the team ID by team name
 	// If the team doesn't exist, this method will create it
-	private static int getTeamID(java.sql.Connection conn, String teamName) throws SQLException {
+	private int getTeamID(java.sql.Connection conn, String teamName) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement("SELECT id FROM Team WHERE name = ?");
 		statement.setString(1, teamName);
 		ResultSet rs = statement.executeQuery();
@@ -257,7 +345,7 @@ public class ScheduleScraper {
 		}
 	}
 
-	private static void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
+	private void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, week=?, home_score=?, away_score=?, tv=?, stadium=? "
 				+ "WHERE id=?");
 		statement.setLong(1, game.getDate().getTime());
@@ -275,7 +363,7 @@ public class ScheduleScraper {
 		statement.executeUpdate();
 	}
 
-	private static void insert(ArrayList<Game> games) throws SQLException, IOException {
+	private void insert() throws SQLException, IOException {
 		java.sql.Connection conn = getConnection();
 		for (Game game : games) {
 			insertGame(conn, game);
@@ -284,7 +372,7 @@ public class ScheduleScraper {
 		conn.close();
 	}
 
-	private static boolean areGames() throws SQLException, IOException {
+	private boolean areGames() throws SQLException, IOException {
 		java.sql.Connection conn = getConnection();
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM Game");
 		ResultSet rs = statement.executeQuery();
@@ -298,8 +386,8 @@ public class ScheduleScraper {
 		return false;
 	}
 	
-	private static ArrayList<Game> scrape(int startMonth, int endMonth) {
-		ArrayList<Game> games = new ArrayList<Game>();
+	private void scrape(int startMonth, int endMonth) {
+		games = new ArrayList<Game>();
 		String baseURL = "http://www.mlssoccer.com/schedule";
 		
 		int week = 0;
@@ -317,7 +405,7 @@ public class ScheduleScraper {
 				} catch (IOException e) {
 					if(retries >= 10){
 						e.printStackTrace();
-						return null;
+						return;
 					}
 					System.out.println("Failed to get document, trying again");
 					retries++;
@@ -407,8 +495,6 @@ public class ScheduleScraper {
 			}
 				
 		}
-		
-		return games;
 	}
 	
 

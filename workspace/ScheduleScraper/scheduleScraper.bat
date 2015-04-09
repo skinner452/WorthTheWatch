@@ -1,1 +1,0 @@
-java -jar scheduleScraper.jar

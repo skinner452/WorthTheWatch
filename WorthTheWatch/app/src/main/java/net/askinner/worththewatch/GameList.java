@@ -107,6 +107,10 @@ public class GameList{
         return "Week " + (currentWeek+1);
     }
 
+    public void resetWeek(){
+        this.currentWeek = getStartWeek();
+    }
+
     public int getStartWeek (){
         Date date = new Date();
 

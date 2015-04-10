@@ -44,6 +44,7 @@ public class GameListFragment extends Fragment {
             getView().findViewById(R.id.nextButton).setEnabled(b);
             getView().findViewById(R.id.backButton).setEnabled(b);
             getView().findViewById(R.id.checkAll).setEnabled(b);
+            getView().findViewById(R.id.week).setEnabled(b);
         } catch (Exception e){
 
         }
@@ -61,11 +62,8 @@ public class GameListFragment extends Fragment {
             final ListView listview = (ListView) view.findViewById(R.id.gameList);
 
             // Create initial adapter
-            GameAdapter adapter = new GameAdapter(getActivity(), gameList);
+            final GameAdapter adapter = new GameAdapter(getActivity(), gameList);
             listview.setAdapter(adapter);
-
-            final TextView weekText = (TextView)view.findViewById(R.id.week);
-            weekText.setText(gameList.weekString());
 
             final CheckBox checkAll = (CheckBox)view.findViewById(R.id.checkAll);
             checkAll.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +79,25 @@ public class GameListFragment extends Fragment {
             } else {
                 checkAll.setChecked(false);
             }
+
+            final TextView weekText = (TextView)view.findViewById(R.id.week);
+            weekText.setText(gameList.weekString());
+            weekText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gameList.resetWeek();
+                    GameAdapter adapter = new GameAdapter(getActivity(), gameList);
+                    listview.setAdapter(adapter);
+
+                    if(gameList.areAllChecked(getActivity())){
+                        checkAll.setChecked(true);
+                    } else {
+                        checkAll.setChecked(false);
+                    }
+
+                    weekText.setText(gameList.weekString());
+                }
+            });
 
             Button backButton = (Button)view.findViewById(R.id.backButton);
             backButton.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +192,11 @@ public class GameListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_list, container, false);
+        if(gameList == null){
+            System.out.println("NULL");
+            initializeView(view);
+            return view;
+        }
 
         if(gameList.isEmpty()){
             new RetrieveGames(this, gameList).execute();

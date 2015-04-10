@@ -33,6 +33,10 @@ public class YourTableFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_your_table, container, false);
 
+        if(gameList == null){
+            return view;
+        }
+
         Table table = gameList.getTable(getActivity());
 
         final ListView listView = (ListView)view.findViewById(R.id.listView);

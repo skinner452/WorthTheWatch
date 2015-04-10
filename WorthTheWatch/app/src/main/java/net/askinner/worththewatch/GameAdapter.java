@@ -39,7 +39,7 @@ public class GameAdapter extends BaseAdapter {
             viewHolder.dateText = (TextView)convertView.findViewById(R.id.date);
             viewHolder.timeText = (TextView)convertView.findViewById(R.id.time);
             viewHolder.scoreText = (TextView)convertView.findViewById(R.id.score);
-            viewHolder.stadiumText = (TextView)convertView.findViewById(R.id.stadium);
+            viewHolder.stadium = (TextView)convertView.findViewById(R.id.stadium);
             viewHolder.homeLogo = (ImageView)convertView.findViewById(R.id.home_logo);
             viewHolder.awayLogo = (ImageView)convertView.findViewById(R.id.away_logo);
             viewHolder.watchedCheck = (CheckBox)convertView.findViewById(R.id.watched_check);
@@ -82,7 +82,7 @@ public class GameAdapter extends BaseAdapter {
             viewHolder.scoreText.setText(game.getRating());
         }
 
-        viewHolder.stadiumText.setText(game.getStadium());
+        viewHolder.stadium.setText(game.getStadium());
 
         // Home team logo
         Team homeTeam = game.getHomeTeam();
@@ -123,7 +123,7 @@ class GameViewHolder {
     TextView dateText;
     TextView timeText;
     TextView scoreText;
-    TextView stadiumText;
+    TextView stadium;
     ImageView homeLogo;
     ImageView awayLogo;
     CheckBox watchedCheck;

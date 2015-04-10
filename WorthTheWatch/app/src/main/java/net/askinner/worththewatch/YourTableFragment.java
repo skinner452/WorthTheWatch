@@ -18,9 +18,14 @@ import java.util.ArrayList;
 public class YourTableFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private GameList gameList;
+    private boolean isUpdating;
 
     public YourTableFragment() {
         // Required empty public constructor
+    }
+
+    public void setUpdating(boolean isUpdating) {
+        this.isUpdating = isUpdating;
     }
 
     @Override
@@ -81,7 +86,7 @@ public class YourTableFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_refresh){
+        if(item.getItemId() == R.id.action_refresh && !isUpdating && ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
             try{
                 new RetrieveGames(this, gameList).execute();
             } catch (Exception e){

@@ -32,6 +32,7 @@ public class GameListFragment extends Fragment {
     private boolean init;
 
     public static int NEEDS_UPDATE = 1;
+    private boolean isUpdating;
 
     public GameListFragment() {
         // Required empty public constructor
@@ -47,6 +48,10 @@ public class GameListFragment extends Fragment {
 
         }
 
+    }
+
+    public void setUpdating(boolean isUpdating) {
+        this.isUpdating = isUpdating;
     }
 
     private void initializeView(View view) {
@@ -118,26 +123,28 @@ public class GameListFragment extends Fragment {
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Game game = gameList.getGames().get(position);
-                    Intent intent;
-                    if (game.isOver()) {
-                        intent = new Intent(getActivity(), AverageRatingActivity.class);
-                    } else {
-                        intent = new Intent(getActivity(), PredictedRatingActivity.class);
-                        intent.putExtra("homeAverage", game.getHomeTeam().getFormattedAverageRating());
-                        intent.putExtra("awayAverage", game.getAwayTeam().getFormattedAverageRating());
-                        intent.putExtra("predicted", game.getPredictedRatingString());
+                    if(ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
+                        Game game = gameList.getGames().get(position);
+                        Intent intent;
+                        if (game.isOver()) {
+                            intent = new Intent(getActivity(), AverageRatingActivity.class);
+                        } else {
+                            intent = new Intent(getActivity(), PredictedRatingActivity.class);
+                            intent.putExtra("homeAverage", game.getHomeTeam().getFormattedAverageRating());
+                            intent.putExtra("awayAverage", game.getAwayTeam().getFormattedAverageRating());
+                            intent.putExtra("predicted", game.getPredictedRatingString());
+                        }
+
+                        intent.putExtra("gameID", game.getId());
+                        intent.putExtra("homeTeam", game.getHomeTeamName());
+                        intent.putExtra("awayTeam", game.getAwayTeamName());
+                        intent.putExtra("date", game.getFormattedDate());
+                        intent.putExtra("time", game.getFormattedTime());
+                        intent.putExtra("stadium", game.getStadium());
+                        intent.putExtra("channels", game.getFormattedChannels());
+
+                        startActivityForResult(intent, NEEDS_UPDATE);
                     }
-
-                    intent.putExtra("gameID", game.getId());
-                    intent.putExtra("homeTeam", game.getHomeTeamName());
-                    intent.putExtra("awayTeam", game.getAwayTeamName());
-                    intent.putExtra("date", game.getFormattedDate());
-                    intent.putExtra("time", game.getFormattedTime());
-                    intent.putExtra("stadium", game.getStadium());
-                    intent.putExtra("channels", game.getFormattedChannels());
-
-                    startActivityForResult(intent, NEEDS_UPDATE);
                 }
             });
 
@@ -153,11 +160,13 @@ public class GameListFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == NEEDS_UPDATE){
             if(resultCode == 1){
-                System.out.println("Updating gameListFragment");
-                try{
-                    new RetrieveGames(this, gameList).execute();
-                } catch (Exception e){
+                if(ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
+                    System.out.println("Updating gameListFragment");
+                    try{
+                        new RetrieveGames(this, gameList).execute();
+                    } catch (Exception e){
 
+                    }
                 }
             }
         }
@@ -180,7 +189,7 @@ public class GameListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_refresh){
+        if(item.getItemId() == R.id.action_refresh && !isUpdating && ConnectionCheck.hasConnection(getActivity().getApplicationContext())){
             try{
                 new RetrieveGames(this, gameList).execute();
             } catch (Exception e) {

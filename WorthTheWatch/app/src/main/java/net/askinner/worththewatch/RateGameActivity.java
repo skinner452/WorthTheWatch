@@ -151,10 +151,8 @@ class RetrieveChars extends AsyncTask<Void,Void,ArrayList<String>> {
             in.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(context, "No connection, try again", Toast.LENGTH_LONG).show();
         }
         return chars;
     }

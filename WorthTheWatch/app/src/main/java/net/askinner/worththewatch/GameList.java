@@ -24,13 +24,14 @@ public class GameList{
     private boolean gotWeek;
     private boolean hasChanged;
     private Table table;
-
+    private boolean updating;
 
 
     public GameList() {
         games = new ArrayList<ArrayList<Game>>();
         teams = new ArrayList<Team>();
         table = null;
+        updating = false;
     }
 
     public void resetTeams() {
@@ -169,8 +170,14 @@ public class GameList{
             games.add(week,new ArrayList<Game>());
             games.get(week).add(g);
         }
+    }
 
+    public void setUpdating(boolean b){
+        updating = b;
+    }
 
+    public boolean isUpdating() {
+        return updating;
     }
 }
 
@@ -181,6 +188,7 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
     public RetrieveGames(Fragment fragment, GameList gameList){
         this.fragment = fragment;
         this.gameList = gameList;
+        gameList.setUpdating(true);
         if(!gameList.isEmpty()){
             gameList.clear();
         }
@@ -190,10 +198,12 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
     protected void onPreExecute() {
         if(fragment instanceof GameListFragment){
             ((GameListFragment) fragment).setViewComponents(false);
+            ((GameListFragment) fragment).setUpdating(true);
         }
 
         if(fragment instanceof YourTableFragment){
             ((YourTableFragment) fragment).setViewComponents(false);
+            ((YourTableFragment) fragment).setUpdating(true);
         }
     }
 
@@ -216,10 +226,8 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
 
             in.close();
         } catch (MalformedURLException e) {
-            Toast.makeText(fragment.getActivity().getApplicationContext(), "No connection, try again", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         } catch (IOException e) {
-            Toast.makeText(fragment.getActivity().getApplicationContext(), "No connection, try again", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
         return gameList;
@@ -227,14 +235,18 @@ class RetrieveGames extends AsyncTask<Void,Void,GameList> {
 
     @Override
     protected void onPostExecute(GameList gameList) {
+        gameList.setUpdating(false);
+
         if(fragment instanceof GameListFragment){
             ((GameListFragment) fragment).setViewComponents(true);
             ((GameListFragment) fragment).updateAdapter();
+            ((GameListFragment) fragment).setUpdating(false);
         }
 
         if(fragment instanceof  YourTableFragment){
             ((YourTableFragment) fragment).setViewComponents(true);
             ((YourTableFragment) fragment).updateAdapter();
+            ((YourTableFragment) fragment).setUpdating(false);
         }
     }
 }

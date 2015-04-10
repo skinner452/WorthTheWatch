@@ -1,5 +1,6 @@
 package net.askinner.worththewatch;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -63,9 +64,11 @@ public class AverageRatingActivity extends ActionBarActivity {
                 // Check to see if they have already rated the game before
                 SharedPreferences sharedPreferences = getSharedPreferences("rated",0);
                 if(!sharedPreferences.getBoolean("" + gameID, false)){
-                    Intent intent = new Intent(v.getContext(),RateGameActivity.class);
-                    intent.putExtra("gameID",gameID);
-                    startActivityForResult(intent, GameListFragment.NEEDS_UPDATE);
+                    if(ConnectionCheck.hasConnection(getApplicationContext())){
+                        Intent intent = new Intent(v.getContext(),RateGameActivity.class);
+                        intent.putExtra("gameID",gameID);
+                        startActivityForResult(intent, GameListFragment.NEEDS_UPDATE);
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "You have already rated this game", Toast.LENGTH_SHORT).show();
                 }
@@ -220,6 +223,7 @@ class AverageRatingDetails extends AsyncTask<Integer,Void,String[]> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return output;
     }
 }

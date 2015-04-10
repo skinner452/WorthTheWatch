@@ -59,14 +59,16 @@ public class GameAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 try{
-                    gameList.setHasChanged(true);
+                    if(!gameList.isUpdating()){
+                        gameList.setHasChanged(true);
 
-                    game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
+                        game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
 
-                    if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
-                        viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-                    } else {
-                        viewHolder.scoreText.setText(game.getRating());
+                        if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
+                            viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
+                        } else {
+                            viewHolder.scoreText.setText(game.getRating());
+                        }
                     }
                 } catch (Exception e){
 

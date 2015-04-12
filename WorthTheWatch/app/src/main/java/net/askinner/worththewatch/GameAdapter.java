@@ -36,6 +36,8 @@ public class GameAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.game_item, parent, false);
 
             viewHolder = new GameViewHolder();
+            viewHolder.homeName = (TextView)convertView.findViewById(R.id.homeTeam);
+            viewHolder.awayName = (TextView)convertView.findViewById(R.id.awayTeam);
             viewHolder.dateText = (TextView)convertView.findViewById(R.id.date);
             viewHolder.timeText = (TextView)convertView.findViewById(R.id.time);
             viewHolder.scoreText = (TextView)convertView.findViewById(R.id.score);
@@ -50,6 +52,10 @@ public class GameAdapter extends BaseAdapter {
         }
 
         final Game game = gameList.getGames().get(position);
+
+        viewHolder.homeName.setText(game.getHomeTeamName());
+        viewHolder.awayName.setText(game.getAwayTeamName());
+
         viewHolder.watchedCheck.setChecked(game.isChecked((Activity)context));
 
         viewHolder.dateText.setText(game.getFormattedDate());
@@ -120,6 +126,8 @@ public class GameAdapter extends BaseAdapter {
 }
 
 class GameViewHolder {
+    TextView homeName;
+    TextView awayName;
     TextView dateText;
     TextView timeText;
     TextView scoreText;

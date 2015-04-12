@@ -106,7 +106,7 @@ public class ScheduleScraper {
 					endTime.add(Calendar.MINUTE, 50);
 					
 					if(endTime.before(currentTime)){
-						System.out.println("Waiting for score on " + game);
+						System.out.println("Waiting for score of " + game);
 						nextUpdate = 1;
 						return;
 					}
@@ -130,11 +130,17 @@ public class ScheduleScraper {
 			nextGameTime.add(Calendar.MINUTE, 50);
 			long nextUpdateInMili = nextGameTime.getTimeInMillis() - currentTime.getTimeInMillis();
 			nextUpdate = (int)(nextUpdateInMili / 60000);
-		}
+			
+			System.out.println("Next update in " + nextUpdate + " minutes");
+		} else {
+			if(nextUpdate%60==0){
+				System.out.println("Next update: " + nextUpdate/60 + " hours");
+			}
 
-		System.out.println("Next update: " + nextUpdate + " minutes");
-		System.out.println("Next full scrape: " + nextFullScrape + " minutes");
-		System.out.println();
+			if(nextFullScrape%60==0){
+				System.out.println("Next full scrape: " + nextFullScrape/60 + " hours");
+			}
+		}
 	}
 	
 	private ArrayList<Game> createCopy(){
@@ -184,7 +190,7 @@ public class ScheduleScraper {
 	}
 	
 	private void updateScores() throws SQLException, IOException {
-		System.out.println("Updating scores for " + games.size() + " games");
+		System.out.println("Updating scores");
 		java.sql.Connection conn = getConnection();
 		PreparedStatement statement = conn.prepareStatement("SELECT Game.id, home.name, away.name, date, home_score FROM Game "
 				+ "JOIN Team home ON home_id = home.id "
@@ -222,7 +228,6 @@ public class ScheduleScraper {
 			}
 		}
 		conn.close();
-		System.out.println("Updated scores for " + games.size() + " games");
 	}
 	
 	private void update() throws SQLException, IOException {
@@ -284,13 +289,13 @@ public class ScheduleScraper {
 				int id = gameToRemove.getId();
 				leftOverGames.remove(gameToRemove);
 				
-				System.out.println("---------");
-				System.out.println("Changed date");
-				
 				// Update the game in the database
 				updateGame(conn, id, game);
 				count++;
 				
+				System.out.println("---------");
+				System.out.println("Changed date");
+				System.out.println(game);
 				System.out.println("---------");
 			}
 		}
@@ -346,7 +351,7 @@ public class ScheduleScraper {
 	}
 
 	private void updateGame(java.sql.Connection conn, int id, Game game) throws SQLException {
-		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, week=?, home_score=?, away_score=?, tv=?, stadium=? "
+		PreparedStatement statement = conn.prepareStatement("UPDATE Game SET date=?, week=?, home_score=?, away_score=?, stadium=? "
 				+ "WHERE id=?");
 		statement.setLong(1, game.getDate().getTime());
 		statement.setInt(2, game.getWeek());
@@ -357,9 +362,8 @@ public class ScheduleScraper {
 			statement.setInt(3, game.getHomeScore());
 			statement.setInt(4, game.getAwayScore());
 		}
-		statement.setString(5, game.getChannels());
-		statement.setString(6, game.getStadium());
-		statement.setInt(7, id);
+		statement.setString(5, game.getStadium());
+		statement.setInt(6, id);
 		statement.executeUpdate();
 	}
 

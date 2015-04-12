@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,6 +72,24 @@ public class GameListFragment extends Fragment {
                 public void onClick(View v) {
                     GameAdapter adapter = (GameAdapter)listview.getAdapter();
                     adapter.checkAll(checkAll.isChecked());
+                }
+            });
+
+            checkAll.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    checkAll.performClick();
+
+                    if(checkAll.isChecked()){
+                        Toast.makeText(getActivity().getApplicationContext(), "Checking previous weeks", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), "Unchecking previous weeks", Toast.LENGTH_SHORT).show();
+                    }
+
+                    gameList.checkAllBefore(checkAll.isChecked(), getActivity());
+
+
+                    return true;
                 }
             });
 

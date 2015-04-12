@@ -1,6 +1,7 @@
 package net.askinner.worththewatch;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
@@ -97,6 +98,14 @@ public class GameList{
             }
         }
         return allGames;
+    }
+
+    public void checkAllBefore(boolean check, Activity activity) {
+        for (int i = 0; i < currentWeek; i++) {
+            for(Game g : games.get(i)){
+                g.setChecked(check, activity);
+            }
+        }
     }
 
     public ArrayList<Team> getTeams() {

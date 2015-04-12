@@ -83,7 +83,7 @@ public class Game {
 	
 	@Override
 	public String toString() {
-		return date + ": " + homeTeam + " - " + awayTeam + " " + homeScore + " - " + awayScore;
+		return date + ": " + homeTeam + " - " + awayTeam;
 	}
 
 	

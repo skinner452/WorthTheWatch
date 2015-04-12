@@ -54,41 +54,41 @@ public class MainActivity extends ActionBarActivity
         checkFirstRun();
     }
 
+    private void displayHelp() {
+        new AlertDialog.Builder(this)
+                .setTitle("Welcome to Worth the Watch!")
+                .setMessage("Matches:\n" +
+                        "Each match displays either an average rating or a predicted rating depending on if the game is over or not. " +
+                        "These ratings are based off how good a match was based off other users ratings of it. " +
+                        "Tap on the game to get a more detailed look at how a match received a rating or how a predicted rating was computed. " +
+                        "You can check off each game as you watch them or if you don't plan on watching them. This allows you to see other " +
+                        "scores without getting any spoilers for the games you plan on watching later. When a game ends, you can tap on it " +
+                        "to submit your own rating.\n\n" +
+                        "Rating a game:\n" +
+                        "Rating a game is very simple. You just need to select a rating from 1-10 and select the characteristics " +
+                        "that define the match from your perspective. Ratings are very much appreciated as they help others determine " +
+                        "if a match is worth the watch. " +
+                        "Please try to be as unbiased as possible when submitting your rating.\n\n" +
+                        "Table:\n" +
+                        "This feature allows you to get a view of the table based off the games that YOU have watched. It will simply " +
+                        "take the games that you have checked off from the Matches tab and generate a table just for you. " +
+                        "You can select to see the table from each side of the conference or all of the teams together in the Supporters' Shield.")
+                .setNeutralButton("Got it!",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+
     private void checkFirstRun() {
         final SharedPreferences sharedPreferences = getSharedPreferences("firstRun", 0);
         boolean firstRun = sharedPreferences.getBoolean("firstRun", true);
         if(firstRun){
-            new AlertDialog.Builder(this)
-                    .setTitle("Welcome to Worth the Watch!")
-                    .setMessage("Matches:\n" +
-                            "Lists all of the matches for the season in a weekly order\n" +
-                            "Press the left and right arrows to go through weeks\n" +
-                            "Tap the week text to go back to the current week\n" +
-                            "Check each match to reveal the scores if they are available (Should be available within 5 minutes of the final score being posted)\n" +
-                            "The check at the top of the screen will check off the entire week at once\n" +
-                            "When the games aren't checked, they will display one of two things\n" +
-                            "a) If the game is over it will show an average rating by the users\n" +
-                            "b) If the game isn't over it will show a predicted rating based off previous matches by those teams\n" +
-                            "Tapping a game in the list will either give you a break down of how the match got its average rating or predicted rating\n" +
-                            "If the game is over, the user has the option of rating a game by tapping the rate button\n\n" +
-                            "Rating a game:\n" +
-                            "You can only rate each game once per device\n" +
-                            "Use the slider to select a rating from 1-10\n" +
-                            "Select the characteristics that fit the match\n" +
-                            "Once you're done, press the submit button\n" +
-                            "If the rating was successful, it will show an updated average rating with your rating included\n\n" +
-                            "Table:\n" +
-                            "Generates a table based off your check marks from the Matches section\n" +
-                            "Allows you to look at a table without any spoilers at all\n" +
-                            "Select between Supporters' Shield, Eastern Conference and Western Conference\n")
-                    .setNeutralButton("Got it!",new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            sharedPreferences.edit().putBoolean("firstRun", false).apply();
-                            dialog.dismiss();
-                        }
-                    })
-                    .show();
+            displayHelp();
+            sharedPreferences.edit().putBoolean("firstRun", false).apply();
         }
     }
 
@@ -102,6 +102,11 @@ public class MainActivity extends ActionBarActivity
         if(item.getItemId() == R.id.action_refresh && !initialConnection){
             replaceFragment(0);
         }
+
+        if(item.getItemId() == R.id.action_help){
+            displayHelp();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

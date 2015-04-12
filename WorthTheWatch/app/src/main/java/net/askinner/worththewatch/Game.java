@@ -78,6 +78,7 @@ public class Game {
     }
 
     public void setChecked(boolean checked, Activity activity) {
+        System.out.println("");
         SharedPreferences sharedPreferences = activity.getSharedPreferences("checked",0);
         sharedPreferences.edit().putBoolean(id + "", checked).apply();
     }

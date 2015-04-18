@@ -2,6 +2,7 @@ package net.askinner.worththewatch;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 public class GameAdapter extends BaseAdapter {
     private GameList gameList;
     private Context context;
+    private int defaultTextColor;
+    private int defaultBackgroundColor;
 
     public GameAdapter(Context context, GameList gameList){
         this.gameList = gameList;
@@ -50,6 +53,14 @@ public class GameAdapter extends BaseAdapter {
         } else {
             viewHolder = (GameViewHolder)convertView.getTag();
         }
+        if(defaultTextColor == 0){
+            defaultTextColor = viewHolder.scoreText.getCurrentTextColor();
+        }
+
+        if(defaultBackgroundColor == 0){
+            defaultBackgroundColor = viewHolder.scoreText.getDrawingCacheBackgroundColor();
+        }
+
 
         final Game game = gameList.getGames().get(position);
 
@@ -70,11 +81,7 @@ public class GameAdapter extends BaseAdapter {
 
                         game.setChecked(viewHolder.watchedCheck.isChecked(), (Activity)context);
 
-                        if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
-                            viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-                        } else {
-                            viewHolder.scoreText.setText(game.getRating());
-                        }
+                        setScoreText(viewHolder, game);
                     }
                 } catch (Exception e){
 
@@ -82,11 +89,7 @@ public class GameAdapter extends BaseAdapter {
             }
         });
 
-        if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
-            viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
-        } else {
-            viewHolder.scoreText.setText(game.getRating());
-        }
+        setScoreText(viewHolder, game);
 
         viewHolder.stadium.setText(game.getStadium());
 
@@ -100,6 +103,35 @@ public class GameAdapter extends BaseAdapter {
 
 
         return convertView;
+    }
+
+    private void setScoreText(GameViewHolder viewHolder, Game game) {
+        if (viewHolder.watchedCheck.isChecked() && game.getHomeScore() != null) {
+            viewHolder.scoreText.setText(game.getHomeScore() + " - " + game.getAwayScore());
+            viewHolder.scoreText.setTextColor(defaultTextColor);
+            viewHolder.scoreText.setBackgroundColor(defaultBackgroundColor);
+        } else {
+            viewHolder.scoreText.setText(game.getRating());
+
+            if(game.isOver()){
+                double rating = Double.parseDouble(game.getRating());
+
+                int red = 255;
+                int green = 255;
+                if(rating > 5){
+                    red = (int)Math.round(1-((rating - 5)/5) * 255);
+                } else if (rating < 5){
+                    green = (int)Math.round(rating/5 * 255);
+                }
+                int color = Color.rgb(red, green, 0);
+                viewHolder.scoreText.setBackgroundColor(Color.DKGRAY);
+                viewHolder.scoreText.setTextColor(color);
+            } else {
+                viewHolder.scoreText.setTextColor(defaultTextColor);
+                viewHolder.scoreText.setBackgroundColor(defaultBackgroundColor);
+            }
+
+        }
     }
 
     public void checkAll(boolean b) {

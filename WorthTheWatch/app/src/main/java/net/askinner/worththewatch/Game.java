@@ -184,4 +184,9 @@ public class Game {
         }
         return output;
     }
+
+    @Override
+    public String toString() {
+        return homeTeamName + " vs " + awayTeamName;
+    }
 }
